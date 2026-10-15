@@ -1,915 +1,479 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#090b0f">
-  <meta name="description" content="Prepare smarter for debates and Model UN with DEBATRIX. Build arguments, challenge assumptions, and develop your own voice.">
-  <title>DEBATRIX — Think Clearly. Argue Better.</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    :root {
-      --bg: #090b0f;
-      --panel: #11151a;
-      --panel-hover: #171d22;
-      --border: #283139;
-      --text: #f4f6f7;
-      --muted: #9aa5ad;
-      --accent: #c7ff4f;
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    button, input, textarea, select { font: inherit; }
-    button { cursor: pointer; }
-    a { color: inherit; text-decoration: none; }
-
-    .app-shell { max-width: 1600px; margin: auto; }
-
-    .topbar {
-      min-height: 76px;
-      padding: 0 clamp(20px, 6vw, 90px);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(9,11,15,.94);
-      backdrop-filter: blur(18px);
-      border-bottom: 1px solid #ffffff10;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      font-family: 'Manrope', sans-serif;
-      font-size: 13px;
-      font-weight: 800;
-      letter-spacing: .16em;
-      white-space: nowrap;
-    }
-
-    .brand-mark {
-      width: 38px;
-      height: 38px;
-      display: grid;
-      place-items: center;
-      border-radius: 10px;
-      background: var(--accent);
-      color: #10150a;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: -.08em;
-    }
-
-    .brand-mark span, .auth-logo span, .heading-period { color: var(--accent); }
-
-    .top-actions {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: clamp(8px, 2vw, 25px);
-    }
-
-    .nav-link {
-      padding: 9px 0;
-      border: 0;
-      background: none;
-      color: #aab4bc;
-      font-size: 12px;
-      transition: color .2s;
-    }
-
-    .nav-link:hover { color: var(--accent); }
-
-    .button {
-      min-height: 43px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 9px;
-      padding: 11px 17px;
-      border: 1px solid transparent;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 700;
-      transition: transform .2s, background .2s, border-color .2s;
-    }
-
-    .button:hover { transform: translateY(-1px); }
-    .button-primary { background: var(--accent); color: #111609; }
-    .button-primary:hover { background: #d9ff91; }
-    .button-secondary { background: #dcecff; color: #111820; }
-    .button-outline { background: transparent; border-color: #35404a; color: #e7ecef; }
-    .button-outline:hover { background: #1b2229; border-color: #64717b; }
-    .button-small { min-height: 35px; padding: 8px 12px; font-size: 11px; }
-    .button-wide { width: 100%; min-height: 49px; }
-
-    .section-wrap {
-      padding-left: clamp(20px, 7vw, 105px);
-      padding-right: clamp(20px, 7vw, 105px);
-    }
-
-    .eyebrow {
-      margin-bottom: 15px;
-      color: var(--accent);
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .17em;
-      text-transform: uppercase;
-    }
-
-    .status-dot {
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      margin: 0 8px 1px 0;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 12px #c7ff4f55;
-    }
-
-    .muted { color: var(--muted); }
-
-    .hero {
-      min-height: 560px;
-      display: grid;
-      grid-template-columns: 1.05fr .95fr;
-      align-items: center;
-      gap: 55px;
-      padding-top: 65px;
-      padding-bottom: 70px;
-      overflow: hidden;
-    }
-
-    .hero h1 {
-      margin: 0 0 25px;
-      font-family: 'Manrope', sans-serif;
-      font-size: clamp(54px, 7.5vw, 98px);
-      line-height: .99;
-      font-weight: 800;
-      letter-spacing: -.085em;
-    }
-
-    .hero h1 span { color: var(--accent); }
-
-    .hero-sub {
-      max-width: 510px;
-      margin: 0;
-      color: #aab4bc;
-      font-size: 15px;
-      line-height: 1.9;
-    }
-
-    .hero-cta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 11px;
-      margin-top: 29px;
-    }
-
-    .hero-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 28px;
-    }
-
-    .hero-pills span {
-      padding: 7px 10px;
-      border: 1px solid #29333a;
-      border-radius: 6px;
-      background: #10151a;
-      color: #c8d0d5;
-      font-size: 10px;
-    }
-
-    .hero-art {
-      position: relative;
-      min-height: 370px;
-      display: grid;
-      place-items: center;
-      isolation: isolate;
-    }
-
-    .hero-art::before {
-      content: "";
-      position: absolute;
-      width: 260px;
-      height: 260px;
-      border-radius: 50%;
-      background: #c7ff4f12;
-      filter: blur(55px);
-      z-index: -1;
-    }
-
-    .art-orbit {
-      position: absolute;
-      border: 1px solid #c7ff4f22;
-      border-radius: 50%;
-    }
-
-    .orbit-one { width: 100%; height: 245px; transform: rotate(-24deg); }
-    .orbit-two { width: 82%; height: 300px; transform: rotate(48deg); }
-
-    .art-card {
-      position: absolute;
-      padding: 23px;
-      border: 1px solid #354239;
-      border-radius: 13px;
-      background: linear-gradient(145deg, #1a221d, #101419);
-      box-shadow: 0 28px 70px #0008;
-    }
-
-    .art-card-back {
-      top: 25%;
-      left: 0;
-      width: 235px;
-      height: 185px;
-      transform: rotate(-7deg);
-    }
-
-    .art-card-front {
-      top: 21%;
-      right: 0;
-      z-index: 2;
-      width: 290px;
-      min-height: 220px;
-      transform: rotate(3deg);
-    }
-
-    .art-card-top, .art-foot {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .art-label {
-      color: var(--accent);
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: .13em;
-    }
-
-    .mini-badge {
-      padding: 4px 7px;
-      border: 1px solid #52633c;
-      border-radius: 20px;
-      color: var(--accent);
-      font-size: 8px;
-    }
-
-    .art-big {
-      margin: 25px 0;
-      font-family: 'Manrope', sans-serif;
-      font-size: 27px;
-      line-height: 1.2;
-      font-weight: 800;
-      letter-spacing: -.05em;
-    }
-
-    .art-big span { color: var(--accent); }
-    .art-divider { height: 1px; margin: 18px 0; background: #354139; }
-    .art-foot { color: #a4b19f; font-size: 8px; letter-spacing: .08em; }
-
-    .art-line {
-      height: 7px;
-      margin-top: 14px;
-      border-radius: 10px;
-      background: #3c4940;
-    }
-
-    .w70 { width: 70%; }
-    .w48 { width: 48%; }
-    .w60 { width: 60%; }
-
-    .floating-chip {
-      position: absolute;
-      z-index: 3;
-      padding: 10px 13px;
-      border: 1px solid #3a4538;
-      border-radius: 8px;
-      background: #151c17;
-      color: #e8f0e5;
-      font-size: 10px;
-      font-weight: 700;
-      box-shadow: 0 15px 30px #0005;
-    }
-
-    .chip-top { top: 9%; right: 0; }
-    .chip-bottom { bottom: 7%; left: 0; }
-
-    .workspace-section {
-      padding-top: 48px;
-      padding-bottom: 90px;
-      border-top: 1px solid #ffffff0b;
-    }
-
-    .section-heading {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .section-heading h2, .panel-heading h2 {
-      margin: 0;
-      font-family: 'Manrope', sans-serif;
-      font-size: clamp(28px, 3.4vw, 39px);
-      font-weight: 800;
-      line-height: 1.2;
-      letter-spacing: -.065em;
-    }
-
-    .section-heading > p {
-      max-width: 300px;
-      margin: 0 0 4px;
-      color: #87929b;
-      font-size: 12px;
-      line-height: 1.8;
-    }
-
-    .mode-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 15px;
-      margin-top: 30px;
-    }
-
-    .mode-card {
-      position: relative;
-      min-height: 270px;
-      padding: 27px;
-      border: 1px solid #29333a;
-      border-radius: 12px;
-      background: #101419;
-      transition: transform .2s, border-color .2s, background .2s;
-    }
-
-    .mode-card:hover {
-      transform: translateY(-4px);
-      border-color: #687b50;
-      background: #141a17;
-    }
-
-    .mode-card.selected {
-      border-color: #71884e;
-      background: linear-gradient(135deg, #182019, #101419 75%);
-    }
-
-    .mode-card.selected::before {
-      content: "";
-      position: absolute;
-      top: 18px;
-      bottom: 18px;
-      left: 0;
-      width: 2px;
-      background: var(--accent);
-    }
-
-    .mode-icon {
-      width: 43px;
-      height: 43px;
-      display: grid;
-      place-items: center;
-      margin-bottom: 23px;
-      border-radius: 10px;
-      font-size: 18px;
-    }
-
-    .purple-icon, .green-icon { background: #c7ff4f14; color: var(--accent); }
-    .blue-icon { background: #8fc9ff15; color: #9bcaff; }
-
-    .mode-kicker, .panel-index {
-      color: #84918a;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: .15em;
-    }
-
-    .mode-card h3 {
-      margin: 9px 0;
-      font-family: 'Manrope', sans-serif;
-      font-size: 23px;
-      font-weight: 800;
-      letter-spacing: -.05em;
-    }
-
-    .mode-card p {
-      min-height: 65px;
-      margin: 0 0 20px;
-      color: #9ba6ae;
-      font-size: 12px;
-      line-height: 1.85;
-    }
-
-    .text-button {
-      padding: 0;
-      border: 0;
-      background: none;
-      color: var(--accent);
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .text-button span { padding-left: 6px; }
-
-    .view { display: none; }
-    .view.active { display: block; animation: page-in .22s ease both; }
-
-    @keyframes page-in {
-      from { opacity: 0; transform: translateY(5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .studio-page { padding-top: 35px; padding-bottom: 80px; }
-
-    .page-heading {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 22px;
-      padding-top: 35px;
-      padding-bottom: 30px;
-    }
-
-    .page-heading h1 {
-      margin: 0 0 10px;
-      font-family: 'Manrope', sans-serif;
-      font-size: clamp(37px, 5vw, 62px);
-      font-weight: 800;
-      line-height: 1.05;
-      letter-spacing: -.07em;
-    }
-
-    .page-heading p { margin: 0; font-size: 13px; line-height: 1.8; }
-
-    .studio-layout { max-width: 900px; }
-
-    .panel {
-      min-width: 0;
-      padding: clamp(24px, 4vw, 42px);
-      border: 1px solid #29343b;
-      border-radius: 14px;
-      background: #101419;
-    }
-
-    .panel-heading {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 27px;
-      padding-bottom: 22px;
-      border-bottom: 1px solid #273139;
-    }
-
-    .panel-heading h2 { font-size: clamp(24px, 3vw, 32px); }
-    .panel-heading p { margin: 8px 0 0; color: #8f9aa2; font-size: 12px; }
-
-    .panel-index {
-      flex-shrink: 0;
-      padding: 6px 8px;
-      border: 1px solid #3b4839;
-      border-radius: 7px;
-      background: #c7ff4f0a;
-      color: var(--accent);
-    }
-
-    .form-stack { display: flex; flex-direction: column; gap: 12px; }
-    .form-stack label, .join-form label { margin-top: 5px; color: #e1e7e8; font-size: 12px; font-weight: 700; }
-
-    .form-stack input, .form-stack textarea, .form-stack select,
-    .inline-field input, .note-form input, .note-form textarea {
-      width: 100%;
-      min-width: 0;
-      padding: 14px;
-      border: 1px solid #2c373f;
-      border-radius: 8px;
-      background: #0b0f12;
-      color: #f4f7f8;
-      font-size: 13px;
-    }
-
-    .form-stack textarea, .note-form textarea { min-height: 110px; resize: vertical; }
-    .form-stack input::placeholder, .form-stack textarea::placeholder { color: #65717b; }
-    .form-stack input:focus, .form-stack textarea:focus, .form-stack select:focus {
-      border-color: #9ac53e;
-      outline: none;
-      box-shadow: 0 0 0 3px #c7ff4f12;
-    }
-
-    .field-label-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 4px;
-    }
-
-    .field-label-row label { margin: 0; }
-    .field-hint, .optional, .form-note { color: #839087; font-size: 10px; }
-    .choice-row { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 9px; }
-
-    .choice { position: relative; margin: 0 !important; }
-    .choice input { position: absolute; width: 1px; height: 1px; opacity: 0; }
-    .choice span {
-      display: grid;
-      place-items: center;
-      padding: 12px 8px;
-      border: 1px solid #2d383f;
-      border-radius: 8px;
-      background: #0b0f12;
-      color: #aeb9bf;
-      font-size: 12px;
-    }
-
-    .choice input:checked + span {
-      border-color: var(--accent);
-      background: #c7ff4f12;
-      color: #eaffc9;
-    }
-
-    .form-note { margin: 4px 0 0; line-height: 1.8; }
-    .auth-actions { display: flex; gap: 10px; margin-top: 8px; }
-    .auth-actions .button { flex: 1; }
-
-    .narrow-wrap { max-width: 760px; margin: auto; padding-top: 35px; padding-bottom: 70px; }
-    .back-button { margin-bottom: 20px; padding: 8px 0; border: 0; background: none; color: #aab4bc; }
-    .auth-panel { max-width: 510px; margin: auto; }
-    .auth-logo { margin-bottom: 20px; font-family: 'Manrope', sans-serif; font-size: 35px; font-weight: 800; }
-
-    .output-section { padding-bottom: 80px; }
-    .output-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
-    .result-meta { margin: 15px 0; color: #91a098; font-size: 11px; }
-    .result-content { display: grid; gap: 12px; }
-    .result-block { padding: clamp(22px, 3vw, 34px); border: 1px solid #2a353d; border-radius: 12px; background: #101419; }
-    .result-block h2, .result-block h3 { color: #f5f7f8; font-family: 'Manrope', sans-serif; letter-spacing: -.04em; }
-    .result-block h2 { margin: 0 0 18px; padding-bottom: 14px; border-bottom: 1px solid #2a353d; font-size: 24px; }
-    .result-block h3 { margin: 0 0 13px; font-size: 19px; }
-    .result-block p, .result-block li { color: #b9c3c8; font-size: 13px; line-height: 1.9; }
-    .result-block p { white-space: pre-wrap; }
-    .result-block strong { color: var(--accent); }
-
-    .history-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 18px 0; border-bottom: 1px solid var(--border); }
-    .small-text { font-size: 11px; }
-    .history-item { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-top: 12px; padding: 18px; border: 1px solid #29343b; border-radius: 10px; background: #101419; }
-    .history-empty { padding: 45px 20px; border: 1px dashed #354139; border-radius: 12px; color: #8e9a91; text-align: center; }
-
-    .group-layout { display: grid; grid-template-columns: 270px minmax(0,1fr); gap: 18px; padding-bottom: 70px; }
-    .group-sidebar, .group-main { min-width: 0; padding: 24px; border: 1px solid #2a343b; border-radius: 13px; background: #101419; }
-    .group-sidebar h2 { margin: 0; font-family: 'Manrope', sans-serif; font-size: 22px; }
-    .group-list { display: grid; gap: 8px; margin-top: 20px; }
-    .group-list-item { padding: 12px; border: 1px solid transparent; border-radius: 9px; background: transparent; text-align: left; }
-    .group-list-item:hover, .group-list-item.active { border-color: #3f4d36; background: #192019; }
-    .inline-field { display: flex; gap: 8px; }
-    .inline-field input { min-width: 0; }
-    .empty-icon { width: 48px; height: 48px; display: grid; place-items: center; border: 1px solid #46553b; border-radius: 13px; background: #182018; color: var(--accent); }
-    .empty-state { padding: 35px 10px; }
-    .empty-state h2 { font-family: 'Manrope', sans-serif; letter-spacing: -.06em; }
-    .empty-state p { max-width: 440px; color: var(--muted); font-size: 13px; line-height: 1.8; }
-
-    .footer {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 26px clamp(20px, 7vw, 105px);
-      border-top: 1px solid #222c32;
-      color: #77848b;
-      font-size: 11px;
-    }
-
-    .footer-brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .12em; }
-    .small-mark { width: 29px; height: 29px; font-size: 17px; }
-    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 200; display: none; padding: 12px 17px; border-radius: 9px; background: var(--accent); color: #111609; font-size: 12px; font-weight: 700; box-shadow: 0 12px 40px #0005; }
-    .dialog { max-width: 480px; width: calc(100% - 32px); padding: 25px; border: 1px solid #344039; border-radius: 14px; background: #101419; color: var(--text); }
-    .dialog::backdrop { background: #050807d9; backdrop-filter: blur(5px); }
-    .dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
-    .icon-button { border: 1px solid #354139; border-radius: 8px; background: #1a2226; color: var(--text); }
-
-    .hidden { display: none !important; }
-
-    @media (max-width: 900px) {
-      .hero { grid-template-columns: 1fr .8fr; gap: 20px; }
-      .art-card-back { left: -7%; }
-      .art-card-front { right: -7%; }
-      .mode-card { padding: 21px; }
-      .group-layout { grid-template-columns: 230px minmax(0,1fr); }
-    }
-
-    @media (max-width: 680px) {
-      .topbar { min-height: 66px; padding: 0 15px; gap: 10px; }
-      .brand { gap: 8px; font-size: 10px; }
-      .brand-mark { width: 31px; height: 31px; font-size: 19px; }
-      .top-actions { gap: 10px; }
-      .top-actions .nav-link { font-size: 10px; }
-      .top-actions .button-small { padding: 7px 8px; font-size: 10px; }
-      .section-wrap { padding-left: 18px; padding-right: 18px; }
-      .hero { grid-template-columns: 1fr; gap: 10px; padding-top: 48px; padding-bottom: 30px; }
-      .hero h1 { font-size: clamp(53px, 13vw, 75px); }
-      .hero-sub { font-size: 13px; }
-      .hero-art { min-height: 300px; margin: 0 -18px; transform: scale(.86); }
-      .art-card-back { left: 4%; }
-      .art-card-front { right: 2%; }
-      .section-heading { display: block; }
-      .section-heading > p { margin-top: 10px; }
-      .workspace-section { padding-top: 32px; padding-bottom: 50px; }
-      .mode-grid { grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
-      .mode-card { min-height: auto; padding: 22px; }
-      .mode-card p { min-height: auto; }
-      .studio-page { padding-top: 20px; }
-      .page-heading { display: block; padding-top: 18px; }
-      .page-heading h1 { font-size: clamp(36px, 10vw, 49px); }
-      .page-heading > .button { margin-top: 15px; }
-      .panel { padding: 21px; }
-      .form-stack input, .form-stack textarea, .form-stack select { font-size: 16px; }
-      .output-actions { justify-content: flex-start; margin-top: 14px; }
-      .group-layout { grid-template-columns: 1fr; }
-      .footer { flex-wrap: wrap; justify-content: center; padding: 24px 18px; text-align: center; }
-      .footer-brand { width: 100%; justify-content: center; }
-      .history-toolbar { align-items: flex-start; flex-direction: column; }
-      .history-item { align-items: flex-start; flex-direction: column; }
-    }
-
-    @media (max-width: 390px) {
-      .top-actions { gap: 7px; }
-      .top-actions .nav-link { font-size: 9px; }
-      .top-actions .button-small { padding: 6px; font-size: 9px; }
-      .hero h1 { font-size: 49px; }
-      .hero-art { margin-right: -30px; margin-left: -30px; transform: scale(.78); }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="DEBATRIX helps you understand, prepare and improve your debate and Model UN arguments.">
+<title>DEBATRIX — Make Your Case</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0e17;--panel:#151622;--panel2:#1b1c2b;--border:#292a3c;--text:#f4f3fc;--muted:#a0a0b7;--purple:#9b83ff;--blue:#77aaff;--green:#69d6ae;--danger:#ff818d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:"DM Sans",sans-serif;line-height:1.6}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:disabled{opacity:.55;cursor:wait}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--purple);outline-offset:3px}
+.topbar{min-height:76px;padding:16px 5%;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--border);position:sticky;top:0;background:#0d0e17ed;backdrop-filter:blur(16px);z-index:10}
+.brand{font-family:Manrope,sans-serif;font-size:19px;font-weight:800;letter-spacing:1.2px;color:white;text-decoration:none;white-space:nowrap}
+.brand span{color:var(--purple)}
+nav{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.nav-link,.button{border:1px solid transparent;border-radius:9px;padding:10px 14px;background:transparent;color:var(--muted);font-weight:600;transition:.2s}
+.nav-link:hover,.nav-link.active{background:var(--panel2);color:white}
+.button:hover{transform:translateY(-1px)}
+.primary{background:var(--purple);color:#14111f;border-color:var(--purple)}
+.secondary{background:#20233a;border-color:#363958;color:white}
+.outline{border-color:var(--border);color:var(--text)}
+.danger{color:var(--danger);border-color:#63313b}
+main{display:none;min-height:75vh;padding:45px 5% 75px}
+main.active{display:block}
+.wrap{max-width:1150px;margin:auto}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:45px;align-items:center;padding:50px 0 75px}
+.eyebrow{font-size:11px;letter-spacing:2px;color:var(--purple);font-weight:700;text-transform:uppercase}
+h1,h2,h3{font-family:Manrope,sans-serif;line-height:1.2}
+h1{font-size:clamp(36px,5vw,61px);letter-spacing:-2px;margin:15px 0}
+h1 span{color:var(--purple)}
+h2{font-size:27px;margin:8px 0 12px}
+h3{font-size:19px;margin:8px 0}
+p{color:var(--muted)}
+.hero p{max-width:600px;font-size:17px}
+.hero-buttons{display:flex;gap:12px;flex-wrap:wrap;margin-top:25px}
+.art{padding:32px;border:1px solid #39324f;border-radius:22px;background:radial-gradient(ellipse at top right,#38305c 0,transparent 65%),var(--panel);min-height:280px;display:flex;flex-direction:column;justify-content:space-between}
+.art small{color:var(--purple);letter-spacing:2px}
+.art strong{font:800 clamp(28px,4vw,43px) Manrope,sans-serif}
+.art hr{border:0;border-top:1px solid var(--border);width:100%}
+.pills{display:flex;gap:9px;flex-wrap:wrap;margin-top:22px}
+.pill{border:1px solid var(--border);border-radius:30px;padding:7px 12px;color:#c8c4dc;font-size:13px}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.card,.panel{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:23px}
+.card{display:flex;flex-direction:column;align-items:flex-start;min-height:230px}
+.card p{flex:1}
+.icon{font-size:24px;margin-bottom:12px}
+.card .button{margin-top:15px}
+.studio{max-width:850px;margin:auto}
+.page-head{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:28px}
+.page-head h1{font-size:clamp(30px,4vw,43px);letter-spacing:-1px}
+.panel{padding:clamp(18px,4vw,30px)}
+.panel-head{border-bottom:1px solid var(--border);padding-bottom:18px;margin-bottom:22px}
+label{display:block;color:#e2e0ef;font-size:14px;font-weight:600;margin:17px 0 8px}
+input:not([type=radio]):not([type=checkbox]),textarea,select{width:100%;padding:12px 13px;border:1px solid #34354a;border-radius:9px;background:#10111c;color:white}
+textarea{resize:vertical;min-height:85px}
+input::placeholder,textarea::placeholder{color:#74758c}
+.choice-row{display:flex;gap:10px;flex-wrap:wrap}
+.choice{display:flex;align-items:center;gap:8px;border:1px solid var(--border);padding:10px 14px;border-radius:9px;margin:0;cursor:pointer}
+.choice input{accent-color:var(--purple)}
+.full{width:100%;margin-top:23px}
+.note{font-size:12px;margin-top:13px}
+.result-actions{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+.result-meta{font-size:12px;color:var(--muted);margin-bottom:18px}
+.result-block{padding:20px;margin-bottom:13px;border:1px solid var(--border);border-radius:12px;background:var(--panel)}
+.result-block h2,.result-block h3,.result-block h4{color:#e5dcff}
+.result-block p,.result-block li{color:#d0cede;overflow-wrap:anywhere}
+.result-block h2{font-size:22px}
+.result-block h3{font-size:18px}
+.result-block li{margin:7px 0}
+.history-item,.team-item{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:17px 0;border-bottom:1px solid var(--border)}
+.history-item h3,.team-item h3{font-size:16px}
+.history-item p{font-size:13px;margin:5px 0}
+.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed #3a3b50;border-radius:12px}
+.inline{display:flex;gap:8px;align-items:center}
+.inline>*{min-width:0}
+.team-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.small{font-size:12px}
+.muted{color:var(--muted)}
+footer{border-top:1px solid var(--border);padding:25px 5%;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+#toast{position:fixed;bottom:22px;right:22px;max-width:min(400px,90vw);background:#26263a;color:white;border:1px solid #45445d;border-radius:10px;padding:13px 18px;display:none;z-index:99;box-shadow:0 10px 35px #0007}
+#toast.show{display:block}
+.hidden{display:none!important}
+@media(max-width:850px){.topbar{align-items:flex-start;flex-direction:column}.topbar nav{width:100%}.nav-link,.button{padding:9px 11px}.hero{grid-template-columns:1fr;padding:25px 0 45px}.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:550px){main{padding:28px 5% 50px}.grid{grid-template-columns:1fr}.section-head,.page-head{align-items:flex-start;flex-direction:column}.history-item,.team-item{align-items:flex-start;flex-direction:column}.inline{align-items:stretch}.art{min-height:220px}}
+@media print{.topbar,footer,.result-actions,#toast,.page-head button{display:none!important}body{background:white;color:black}main{display:none!important}#results.active{display:block!important;padding:0}.result-block{background:white;border:1px solid #ddd}.result-block p,.result-block li{color:black}}
+</style>
 </head>
-
 <body>
-<div class="app-shell">
+<header class="topbar">
+<a class="brand" href="#" data-page="home">DEBATRIX<span>.</span></a>
+<nav aria-label="Main navigation">
+<button class="nav-link active" data-page="home">Home</button>
+<button class="nav-link" data-page="debate">Debate Studio</button>
+<button class="nav-link" data-page="mun">Diplomat Studio</button>
+<button class="nav-link" data-page="history">History</button>
+<button class="nav-link" data-page="teams">Teams</button>
+<button class="button outline" data-page="account">Account</button>
+</nav>
+</header>
 
-  <header class="topbar">
-    <a class="brand" href="#home-view" data-view="home" aria-label="DEBATRIX home">
-      <span class="brand-mark">D<span>.</span></span>
-      <span>DEBATRIX</span>
-    </a>
+<main id="home" class="active">
+<div class="wrap">
+<section class="hero">
+<div>
+<div class="eyebrow">Think clearly. Speak with purpose.</div>
+<h1>Walk in with<br><span>a case.</span></h1>
+<p>Build arguments you understand, prepare with confidence, and learn to respond when someone challenges your ideas. Your preparation is a starting point—not something to memorise.</p>
+<div class="hero-buttons">
+<button class="button primary" data-page="debate">Start preparing ↗</button>
+<button class="button outline" data-page="mun">Prepare for Model UN</button>
+</div>
+<div class="pills"><span class="pill">Debate preparation</span><span class="pill">Model UN strategy</span><span class="pill">Team collaboration</span></div>
+</div>
+<div class="art"><small>YOUR CASE / 001</small><strong>Make every<br>point count<span>.</span></strong><hr><div class="pills"><span class="pill">Claim</span><span class="pill">Evidence</span><span class="pill">Reasoning</span></div></div>
+</section>
+<section>
+<div class="section-head"><div><div class="eyebrow">Choose your workspace</div><h2>What are you preparing for?</h2></div></div>
+<div class="grid">
+<article class="card"><div class="icon">⚡</div><div class="eyebrow">01 / Argumentation</div><h3>Debate Prep</h3><p>Build a case, explore opposing arguments and prepare responses you understand.</p><button class="button primary" data-page="debate">Open Debate Studio ↗</button></article>
+<article class="card"><div class="icon">◎</div><div class="eyebrow">02 / Diplomacy</div><h3>Model UN</h3><p>Shape your country's position, policy arguments, questions and resolution ideas.</p><button class="button secondary" data-page="mun">Open Diplomat Studio ↗</button></article>
+<article class="card"><div class="icon">↗</div><div class="eyebrow">03 / Teamwork</div><h3>Team Workspace</h3><p>Organise tasks and collect your group's research and arguments on this device.</p><button class="button outline" data-page="teams">Open workspace ↗</button></article>
+</div>
+</section>
+</div>
+</main>
 
-    <nav class="top-actions" aria-label="Main navigation">
-      <button class="nav-link" data-view="debate">Debate Studio</button>
-      <button class="nav-link" data-view="mun">Diplomat Studio</button>
-      <button class="nav-link" data-view="history">History</button>
-      <button class="nav-link" data-view="groups">Teams</button>
-      <button class="button button-outline button-small" id="auth-nav">Log in / Sign up</button>
-      <button class="nav-link hidden" id="logout-btn">Log out</button>
-    </nav>
-  </header>
+<main id="debate">
+<div class="studio">
+<div class="page-head"><div><div class="eyebrow">Debate Studio</div><h1>Let's build your argument.</h1><p>Start with your motion. Test your reasons and prepare for challenges.</p></div><button class="button outline" data-page="home">← Home</button></div>
+<form id="debate-form" class="panel">
+<div class="panel-head"><div class="eyebrow">Build your case</div><h2>What are we arguing about?</h2><p>Use the exact motion if you have one.</p></div>
+<label for="motion">Debate motion</label><textarea id="motion" required placeholder="Example: This house would ban targeted advertising to children."></textarea>
+<label>Which side are you on?</label><div class="choice-row">
+<label class="choice"><input type="radio" name="side" value="For"> For</label>
+<label class="choice"><input type="radio" name="side" value="Against"> Against</label>
+<label class="choice"><input type="radio" name="side" value="Neutral" checked> Neutral</label>
+</div>
+<label for="format">Debate format</label><select id="format"><option>General school debate</option><option>World Schools Debate</option><option>British Parliamentary</option><option>Lincoln-Douglas</option><option>Public Forum</option><option>Oxford-style debate</option></select>
+<label for="level">Detail level</label><select id="level"><option value="balanced">Balanced and practical</option><option value="beginner">Beginner-friendly</option><option value="advanced">Advanced / competition</option></select>
+<button class="button primary full" type="submit">Make my case ↗</button>
+<p class="note">AI generation requires your deployed /api/groq backend. Verify evidence before using it in competition.</p>
+</form>
+</div>
+</main>
 
-  <main id="home-view" class="view active">
-    <section class="hero section-wrap">
-      <div class="hero-copy">
-        <div class="eyebrow"><span class="status-dot"></span> THINK CLEARLY. SPEAK WITH PURPOSE.</div>
-        <h1>Walk in with<br><span>a case.</span></h1>
-        <p class="hero-sub">Prepare arguments you understand. Challenge assumptions, sharpen your reasoning, and learn to respond under pressure. Your preparation should build your confidence—not replace your thinking.</p>
-        <div class="hero-cta">
-          <button class="button button-primary" data-view="debate">Start preparing <span>↗</span></button>
-          <button class="button button-outline" data-view="mun">Explore Model UN</button>
-        </div>
-        <div class="hero-pills">
-          <span>✦ Debate preparation</span>
-          <span>◎ Model UN strategy</span>
-          <span>↗ Team collaboration</span>
-        </div>
+<main id="mun">
+<div class="studio">
+<div class="page-head"><div><div class="eyebrow">Diplomat Studio · Model UN</div><h1>Prepare your delegation.</h1><p>Understand your agenda, your country's interests and the solutions you can negotiate.</p></div><button class="button outline" data-page="home">← Home</button></div>
+<form id="mun-form" class="panel">
+<div class="panel-head"><div class="eyebrow">Diplomacy Studio</div><h2>Your delegation. Your strategy.</h2><p>Prepare for the room, not just the speech.</p></div>
+<label for="country">Assigned country</label><input id="country" required placeholder="e.g. India">
+<label for="committee">Committee</label><input id="committee" required placeholder="e.g. UNHRC">
+<label for="agenda">Agenda / topic</label><textarea id="agenda" required placeholder="Enter your committee agenda"></textarea>
+<label for="delegations">Other countries / delegations (optional)</label><input id="delegations" placeholder="Separate countries with commas">
+<button class="button primary full" type="submit">Build my MUN prep ↗</button>
+<p class="note">Use official statements and reliable sources to verify policy positions.</p>
+</form>
+</div>
+</main>
+
+<main id="results">
+<div class="wrap">
+<div class="page-head"><div><div class="eyebrow">Your workspace</div><h1 id="result-title">Your preparation.</h1><p>Question assumptions, verify evidence and make the work your own.</p></div><button class="button outline" data-page="home">← Home</button></div>
+<div class="result-actions">
+<button id="save-btn" class="button outline">Save preparation</button>
+<button id="print-btn" class="button outline">Print</button>
+<button id="download-btn" class="button primary">Download notes ↓</button>
+</div>
+<div id="result-meta" class="result-meta"></div>
+<div id="result-content"></div>
+</div>
+</main>
+
+<main id="history">
+<div class="wrap">
+<div class="page-head"><div><div class="eyebrow">Your library</div><h1>Past preparations.</h1><p>Your saved cases and MUN notes on this device.</p></div><button class="button outline" data-page="home">← Home</button></div>
+<div id="history-list"></div>
+</div>
+</main>
+
+<main id="teams">
+<div class="wrap">
+<div class="page-head"><div><div class="eyebrow">Collaboration studio</div><h1>Team workspace.</h1><p>Create a local workspace to organise tasks and arguments.</p></div><button class="button outline" data-page="home">← Home</button></div>
+<div class="panel">
+<h2>Your workspaces</h2>
+<form id="team-form"><label for="team-name">Workspace name</label><input id="team-name" required maxlength="70" placeholder="e.g. Nationals Debate Team"><label for="team-topic">Motion / topic</label><input id="team-topic" placeholder="What are you preparing for?"><button class="button primary full" type="submit">Create workspace +</button></form>
+<div id="team-list" style="margin-top:25px"></div>
+</div>
+</div>
+</main>
+
+<main id="account">
+<div class="studio">
+<div class="page-head"><div><div class="eyebrow">Your account</div><h1>Welcome to DEBATRIX.</h1><p>This version saves your work in this browser without an account.</p></div><button class="button outline" data-page="home">← Home</button></div>
+<div class="panel"><h2>Guest mode</h2><p>Your saved preparations and teams are stored locally on this device. Clearing browser site data may remove them.</p><button class="button outline" id="export-history">Export saved history</button><button class="button danger" id="clear-history" style="margin-left:8px">Clear history</button><p class="note">Cloud sign-in and cross-device collaboration require a configured authentication backend.</p></div>
+</div>
+</main>
+
+<footer><strong>DEBATRIX<span style="color:var(--purple)">.</span></strong><span>Built for better arguments.</span><span>Created by Siddharth.N</span></footer>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+"use strict";
+
+const $ = (selector, root=document) => root.querySelector(selector);
+const $$ = (selector, root=document) => [...root.querySelectorAll(selector)];
+const HISTORY_KEY = "debatrix_history_v2";
+const TEAMS_KEY = "debatrix_teams_v2";
+let currentPrep = null;
+let toastTimer;
+
+function read(key) {
+  try { return JSON.parse(localStorage.getItem(key) || "[]"); }
+  catch { return []; }
+}
+function write(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+  catch { toast("Could not save. Browser storage may be full or disabled."); return false; }
+}
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[c]));
+}
+function toast(message) {
+  const el = $("#toast");
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 3500);
+}
+function showPage(name) {
+  const target = document.getElementById(name);
+  if (!target) return;
+  $$("main").forEach(el => el.classList.toggle("active", el === target));
+  $$("[data-page]").forEach(btn => btn.classList.toggle("active", btn.dataset.page === name));
+  if (name === "history") renderHistory();
+  if (name === "teams") renderTeams();
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+document.addEventListener("click", event => {
+  const button = event.target.closest("[data-page]");
+  if (button) {
+    event.preventDefault();
+    showPage(button.dataset.page);
+  }
+});
+
+function renderMarkdown(text) {
+  // Escape HTML before rendering basic Markdown.
+  let s = escapeHTML(text);
+  s = s.replace(/^### (.+)$/gm, "<h3>$1</h3>")
+       .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+       .replace(/^# (.+)$/gm, "<h2>$1</h2>")
+       .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+       .replace(/`(.+?)`/g, "<code>$1</code>");
+  s = s.replace(/(?:^|\n)((?:[-*] .+(?:\n|$))+)/g, (_, list) =>
+    "<ul>" + list.trim().split("\n").map(item => "<li>" + item.replace(/^[-*] /,"") + "</li>").join("") + "</ul>");
+  s = s.replace(/(?:^|\n)((?:\d+\. .+(?:\n|$))+)/g, (_, list) =>
+    "<ol>" + list.trim().split("\n").map(item => "<li>" + item.replace(/^\d+\. /,"") + "</li>").join("") + "</ol>");
+  return s.split(/\n{2,}/).map(part => {
+    const trimmed = part.trim();
+    if (!trimmed) return "";
+    if (/^<(h2|h3|ul|ol)/.test(trimmed)) return trimmed;
+    return "<p>" + trimmed.replace(/\n/g, "<br>") + "</p>";
+  }).join("");
+}
+
+function openPreparation(prep) {
+  currentPrep = prep;
+  $("#result-title").textContent = prep.title || "Your preparation";
+  $("#result-meta").textContent =
+    (prep.kind === "mun" ? "MODEL UN" : "DEBATE PREP") +
+    " · " + new Date(prep.createdAt).toLocaleString() +
+    " · " + (prep.source === "ai" ? "AI-assisted draft" : "Saved preparation");
+  $("#result-content").innerHTML = '<article class="result-block">' +
+    renderMarkdown(prep.content || "No content was saved.") + "</article>";
+  showPage("results");
+}
+function savePreparation(prep, quiet=false) {
+  const list = read(HISTORY_KEY);
+  const index = list.findIndex(item => item.id === prep.id);
+  if (index >= 0) list[index] = prep;
+  else list.unshift(prep);
+  if (write(HISTORY_KEY, list.slice(0,100)) && !quiet) toast("Preparation saved on this device.");
+  renderHistory();
+}
+function renderHistory() {
+  const list = read(HISTORY_KEY);
+  const container = $("#history-list");
+  if (!list.length) {
+    container.innerHTML = '<div class="empty">No saved preparations yet. Generate a case or MUN plan, then save it.</div>';
+    return;
+  }
+  container.innerHTML = list.map(item => `
+    <article class="history-item">
+      <div><h3>${escapeHTML(item.title)}</h3>
+      <p>${item.kind === "mun" ? "Model UN" : "Debate prep"} · ${escapeHTML(new Date(item.createdAt).toLocaleDateString())}</p>
+      <p>${escapeHTML((item.content || "").slice(0,150))}${(item.content || "").length > 150 ? "…" : ""}</p></div>
+      <div class="inline">
+        <button class="button outline" data-open="${escapeHTML(item.id)}">Open</button>
+        <button class="button danger" data-delete="${escapeHTML(item.id)}">Delete</button>
       </div>
+    </article>`).join("");
+}
+$("#history-list").addEventListener("click", event => {
+  const open = event.target.closest("[data-open]");
+  const del = event.target.closest("[data-delete]");
+  if (open) {
+    const prep = read(HISTORY_KEY).find(item => item.id === open.dataset.open);
+    if (prep) openPreparation(prep);
+  }
+  if (del) {
+    write(HISTORY_KEY, read(HISTORY_KEY).filter(item => item.id !== del.dataset.delete));
+    renderHistory();
+    toast("Preparation deleted.");
+  }
+});
 
-      <div class="hero-art" aria-hidden="true">
-        <div class="art-orbit orbit-one"></div>
-        <div class="art-orbit orbit-two"></div>
-        <div class="art-card art-card-back">
-          <span class="art-label">COUNTERPOINT</span>
-          <div class="art-line w70"></div>
-          <div class="art-line w48"></div>
-          <div class="art-line w60"></div>
-        </div>
-        <div class="art-card art-card-front">
-          <div class="art-card-top">
-            <span class="art-label">YOUR CASE</span>
-            <span class="mini-badge">READY TO REFINE</span>
-          </div>
-          <div class="art-big">Make every<br>point count<span>.</span></div>
-          <div class="art-divider"></div>
-          <div class="art-foot"><span>CLAIM</span><span>↗ EVIDENCE</span><span>REASONING</span></div>
-        </div>
-        <div class="floating-chip chip-top">✦ Clear reasoning</div>
-        <div class="floating-chip chip-bottom">↗ Stronger rebuttals</div>
-      </div>
-    </section>
+async function generate(kind, payload, form) {
+  const button = $('button[type="submit"]', form);
+  const originalText = button.textContent;
+  button.disabled = true;
+  button.textContent = "Building your preparation…";
+  try {
+    const response = await fetch("/api/groq", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({kind, ...payload})
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || "The AI backend returned an error (" + response.status + ").");
+    }
+    if (!data.content) throw new Error("The backend returned no preparation text.");
+    const prep = {
+      id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+      kind,
+      title: data.title || payload.title || "Your preparation",
+      content: data.content,
+      createdAt: new Date().toISOString(),
+      source: "ai",
+      payload
+    };
+    openPreparation(prep);
+    savePreparation(prep, true);
+    toast("Preparation created. Check evidence and refine your arguments.");
+  } catch (error) {
+    console.error(error);
+    toast(error.message || "Could not connect to the AI backend.");
+  } finally {
+    button.disabled = false;
+    button.textContent = originalText;
+  }
+}
 
-    <section class="section-wrap workspace-section">
-      <div class="section-heading">
-        <div>
-          <div class="eyebrow">YOUR NEXT MOVE</div>
-          <h2>Choose your workspace.</h2>
-        </div>
-        <p>Focused tools for the moments that matter: building a case, representing a country, or working as a team.</p>
-      </div>
+$("#debate-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const motion = $("#motion").value.trim();
+  if (!motion) return toast("Enter a debate motion first.");
+  generate("debate", {
+    title: motion,
+    motion,
+    side: $('input[name="side"]:checked').value,
+    format: $("#format").value,
+    level: $("#level").value
+  }, event.currentTarget);
+});
 
-      <div class="mode-grid">
-        <article class="mode-card selected" id="debate-card">
-          <div class="mode-icon purple-icon">⚡</div>
-          <div class="mode-kicker">01 / ARGUMENTATION</div>
-          <h3>Debate Prep</h3>
-          <p>Develop claims, understand the strongest opposition, and practise answering the arguments that matter.</p>
-          <button class="text-button" data-view="debate">Open Debate Studio <span>↗</span></button>
-        </article>
+$("#mun-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const country = $("#country").value.trim();
+  const committee = $("#committee").value.trim();
+  const agenda = $("#agenda").value.trim();
+  if (!country || !committee || !agenda) return toast("Complete the required fields.");
+  generate("mun", {
+    title: country + " · " + agenda,
+    country,
+    committee,
+    agenda,
+    delegations: $("#delegations").value.trim()
+  }, event.currentTarget);
+});
 
-        <article class="mode-card" id="mun-card">
-          <div class="mode-icon blue-icon">◎</div>
-          <div class="mode-kicker">02 / DIPLOMACY</div>
-          <h3>Model UN</h3>
-          <p>Build a country strategy, prepare points of information, and develop solutions you can negotiate.</p>
-          <button class="text-button" data-view="mun">Open Diplomat Studio <span>↗</span></button>
-        </article>
+$("#save-btn").addEventListener("click", () => {
+  if (currentPrep) savePreparation(currentPrep);
+  else toast("Open a preparation first.");
+});
+$("#print-btn").addEventListener("click", () => window.print());
+$("#download-btn").addEventListener("click", () => {
+  if (!currentPrep) return toast("Open a preparation first.");
+  const text = currentPrep.title + "\n" + "=".repeat(currentPrep.title.length) +
+    "\n\n" + currentPrep.content;
+  const blob = new Blob([text], {type:"text/markdown;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "debatrix-notes.md";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast("Notes downloaded.");
+});
 
-        <article class="mode-card" id="group-card">
-          <div class="mode-icon green-icon">↗</div>
-          <div class="mode-kicker">03 / COLLABORATION</div>
-          <h3>Team Workspace</h3>
-          <p>Organise research, divide responsibilities, and keep your team's arguments and decisions together.</p>
-          <button class="text-button" data-view="groups">Open workspace <span>↗</span></button>
-        </article>
-      </div>
-    </section>
-  </main>
+function renderTeams() {
+  const teams = read(TEAMS_KEY);
+  const list = $("#team-list");
+  if (!teams.length) {
+    list.innerHTML = '<div class="empty">No workspaces yet. Create your first workspace above.</div>';
+    return;
+  }
+  list.innerHTML = teams.map(team => `
+    <article class="team-item">
+      <div><h3>${escapeHTML(team.name)}</h3><p>${escapeHTML(team.topic || "No topic set")}</p>
+      <p class="small">Created ${escapeHTML(new Date(team.createdAt).toLocaleDateString())}</p></div>
+      <button class="button danger" data-team-delete="${escapeHTML(team.id)}">Delete</button>
+    </article>`).join("");
+}
+$("#team-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const name = $("#team-name").value.trim();
+  if (!name) return toast("Enter a workspace name.");
+  const teams = read(TEAMS_KEY);
+  teams.unshift({
+    id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+    name,
+    topic: $("#team-topic").value.trim(),
+    createdAt: new Date().toISOString()
+  });
+  if (write(TEAMS_KEY, teams)) {
+    event.currentTarget.reset();
+    renderTeams();
+    toast("Workspace created on this device.");
+  }
+});
+$("#team-list").addEventListener("click", event => {
+  const button = event.target.closest("[data-team-delete]");
+  if (!button) return;
+  write(TEAMS_KEY, read(TEAMS_KEY).filter(team => team.id !== button.dataset.teamDelete));
+  renderTeams();
+  toast("Workspace deleted.");
+});
 
-  <main id="debate-view" class="view">
-    <section class="section-wrap studio-page">
-      <div class="page-heading">
-        <div>
-          <div class="eyebrow">DEBATE STUDIO · BUILD YOUR CASE</div>
-          <h1>Let's build your argument.</h1>
-          <p class="muted">Start with the motion. Build your reasoning, test opposing views, and prepare for challenges.</p>
-        </div>
-        <button class="button button-outline" data-view="home">← Dashboard</button>
-      </div>
+$("#export-history").addEventListener("click", () => {
+  const data = {preparations:read(HISTORY_KEY), teams:read(TEAMS_KEY)};
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "debatrix-backup.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  toast("Backup exported.");
+});
+$("#clear-history").addEventListener("click", () => {
+  if (!confirm("Delete all saved preparations from this browser? This cannot be undone.")) return;
+  write(HISTORY_KEY, []);
+  renderHistory();
+  toast("History cleared.");
+});
 
-      <div class="studio-layout">
-        <article class="panel prep-panel" id="debate-form">
-          <div class="panel-heading">
-            <div>
-              <div class="eyebrow">01 / THE MOTION</div>
-              <h2>What are we arguing about?</h2>
-              <p>Use the exact motion if you have one.</p>
-            </div>
-            <span class="panel-index">01</span>
-          </div>
-
-          <form id="debate-form-el" class="form-stack">
-            <label for="motion">Debate motion</label>
-            <textarea id="motion" required rows="3" placeholder="Example: This House would ban targeted advertising to children."></textarea>
-
-            <div class="field-label-row">
-              <label>Which side are you on?</label>
-              <span class="field-hint">Neutral explores both sides</span>
-            </div>
-
-            <div class="choice-row" role="group" aria-label="Debate side">
-              <label class="choice"><input type="radio" name="side" value="For"><span>For</span></label>
-              <label class="choice"><input type="radio" name="side" value="Against"><span>Against</span></label>
-              <label class="choice"><input type="radio" name="side" value="Neutral" checked><span>Neutral</span></label>
-            </div>
-
-            <label for="format">Debate format</label>
-            <select id="format">
-              <option>General school debate</option>
-              <option>World Schools Debate</option>
-              <option>British Parliamentary</option>
-              <option>Lincoln-Douglas</option>
-              <option>Public Forum</option>
-              <option>Oxford-style debate</option>
-            </select>
-
-            <label for="level">Preparation level</label>
-            <select id="level">
-              <option value="balanced">Balanced and practical</option>
-              <option value="beginner">Beginner-friendly</option>
-              <option value="advanced">Advanced / competition</option>
-            </select>
-
-            <button class="button button-primary button-wide" type="submit">Build my case <span>↗</span></button>
-            <p class="form-note">Use the result as a thinking tool. Verify evidence, challenge weak points, and make the arguments your own.</p>
-          </form>
-        </article>
-      </div>
-    </section>
-  </main>
-
-  <main id="mun-view" class="view">
-    <section class="section-wrap studio-page">
-      <div class="page-heading">
-        <div>
-          <div class="eyebrow">DIPLOMAT STUDIO · MODEL UN</div>
-          <h1>Prepare your delegation.</h1>
-          <p class="muted">Understand your agenda, your country's interests, and the solutions you can negotiate.</p>
-        </div>
-        <button class="button button-outline" data-view="home">← Dashboard</button>
-      </div>
-
-      <div class="studio-layout">
-        <article class="panel prep-panel mun-panel" id="mun-form">
-          <div class="panel-heading">
-            <div>
-              <div class="eyebrow">02 / DIPLOMACY</div>
-              <h2>Your delegation. Your strategy.</h2>
-              <p>Prepare for the room, not just the speech.</p>
-            </div>
-            <span class="panel-index">02</span>
-          </div>
-
-          <form id="mun-form-el" class="form-stack">
-            <label for="country">Assigned country</label>
-            <input id="country" required placeholder="e.g. India">
-
-            <label for="committee">Committee</label>
-            <input id="committee" required placeholder="e.g. UNHRC">
-
-            <label for="agenda">Agenda / topic</label>
-            <textarea id="agenda" required rows="3" placeholder="What issue is your committee discussing?"></textarea>
-
-            <label for="delegations">Other countries / delegations <span class="optional">OPTIONAL</span></label>
-            <input id="delegations" placeholder="Separate countries with commas">
-
-            <button class="button button-secondary button-wide" type="submit">Build my MUN preparation <span>↗</span></button>
-            <p class="form-note">Check your conference guide and official country statements before relying on policy claims.</p>
-          </form>
-        </article>
-      </div>
-    </section>
-  </main>
-
-  <main id="results-view" class="view">
-    <section class="section-wrap output-section" id="output-section">
-      <div class="page-heading">
-        <div>
-          <div class="eyebrow">YOUR WORKSPACE</div>
-          <h1 id="output-title">Your preparation</h1>
-          <p class="muted">A working draft to question, improve, and make your own.</p>
-        </div>
-        <button class="button button-outline" data-view="home">← Dashboard</button>
-      </div>
-
-      <div class="output-actions">
-        <button class="button button-outline button-small" id="save-prep">Save preparation</button>
-        <button class="button button-outline button-small" id="print-prep">Print</button>
-        <button class="button button-primary button-small" id="download-prep">Download notes ↓</button>
-      </div>
-      <div class="result-meta" id="result-meta"></div>
-      <div class="result-content" id="result-content"></div>
-    </section>
-  </main>
-
-  <main id="auth-view" class="view">
-    <section class="section-wrap narrow-wrap">
-      <button class="back-button" data-view="home">← Back to Home</button>
-      <div class="panel auth-panel">
-        <div class="auth-logo">D<span>.</span></div>
-        <div class="eyebrow">YOUR WORK. YOUR ACCOUNT.</div>
-        <h1 id="auth-title">Welcome to DEBATRIX.</h1>
-        <p class="muted">Sign in to sync preparation history and collaborate with your team. You can also continue as a guest.</p>
-
-        <form id="auth-form" class="form-stack">
-          <label for="auth-email">Email</label>
-          <input id="auth-email" type="email" autocomplete="email" required placeholder="you@example.com">
-
-          <label for="auth-password">Password</label>
-          <input id="auth-password" type="password" autocomplete="current-password" minlength="8" required placeholder="At least 8 characters">
-
-          <div class="auth-actions">
-            <button class="button button-primary" type="submit" id="login-btn">Log in</button>
-            <button class="button button-outline" type="button" id="signup-btn">Sign up</button>
-          </div>
-        </form>
-        <p class="form-note" id="auth-message">Use an email address you can access for confirmation.</p>
-      </div>
-    </section>
-  </main>
-
-  <main id="history-view" class="
+renderHistory();
+renderTeams();
+})();
+</script>
+</body>
+</html>
