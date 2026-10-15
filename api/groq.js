@@ -3,278 +3,253 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
 
   if (req.method !== "POST") {
-    return res.status(405).json({
-      error: "Use POST for preparation requests."
-    });
+    return res.status(405).json({ error: "Use POST for preparation requests." });
   }
 
   const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
     return res.status(503).json({
-      error: "AI is not configured. Add GROQ_API_KEY in Vercel Environment Variables and redeploy."
+      error: "AI is not configured. Add GROQ_API_KEY in Vercel and redeploy."
     });
   }
 
-  const body = req.body || {};
-  const kind = body.kind === "mun" ? "mun" : "debate";
+  const clean = (value, max = 4000) =>
+    typeof value === "string" ? value.trim().slice(0, max) : "";
 
-  const clean = (value, max = 3000) =>
-    typeof value === "string"
-      ? value.trim().slice(0, max)
-      : "";
+  try {
+    const body = req.body || {};
+    const kind = clean(body.kind, 20);
+    const title = clean(body.title, 300);
+    const motion = clean(body.motion, 1500);
+    const side = clean(body.side, 30) || "Neutral";
+    const format = clean(body.format, 100) || "General school debate";
+    const level = clean(body.level, 30) || "balanced";
+    const country = clean(body.country, 100);
+    const committee = clean(body.committee, 150);
+    const agenda = clean(body.agenda, 1500);
+    const delegations = clean(body.delegations, 1000);
 
-  const motion = clean(body.motion, 1000);
-  const side = clean(body.side || "Neutral", 100);
-  const format = clean(body.format || "General school debate", 150);
-  const level = clean(body.level || "balanced", 50);
+    let system;
+    let prompt;
 
-  const country = clean(body.country, 150);
-  const committee = clean(body.committee, 200);
-  const agenda = clean(body.agenda, 1500);
-  const delegations = clean(body.delegations, 1500);
+    if (kind === "mun") {
+      if (!country || !committee || !agenda) {
+        return res.status(400).json({
+          error: "Enter your country, committee, and agenda."
+        });
+      }
 
-  if (kind === "debate" && !motion) {
-    return res.status(400).json({
-      error: "Enter a debate motion first."
-    });
-  }
+      system = `
+You are DEBATRIX, a rigorous Model UN strategy coach.
 
-  if (kind === "mun" && (!country || !committee || !agenda)) {
-    return res.status(400).json({
-      error: "Enter your country, committee and agenda."
-    });
-  }
-
-  let system;
-  let prompt;
-
-  if (kind === "mun") {
-    system = `
-You are DEBATRIX, a serious Model United Nations strategy coach.
-
-Your job is to help a delegate understand the issue, develop a defensible
-national position, negotiate effectively and think independently.
+Your job is to help a student understand the issue, represent their
+assigned country responsibly, negotiate effectively, and develop
+their own arguments.
 
 QUALITY RULES:
-- Every recommendation must connect to the exact agenda and assigned country.
-- Distinguish established facts, analysis and proposed strategy.
-- Never invent a country's policy, treaty provision, quotation, statistic,
-  UN resolution, alliance or historical event.
-- Never invent citations, URLs or claim you checked sources you did not check.
-- Mark time-sensitive or uncertain country-specific claims [VERIFY].
-- Where knowledge of a country's position is uncertain, explain what the
-  delegate must establish through research instead of guessing.
-- Explain causal reasoning, trade-offs, feasibility and implementation.
-- Avoid generic diplomatic language, repetitive paragraphs and empty slogans.
+- Be specific to the exact agenda, committee and country.
+- Never invent statistics, quotations, treaties, resolutions,
+  voting records, national policies, or sources.
+- Do not pretend you searched the internet or checked live documents.
+- Separate established general knowledge from analysis and proposals.
+- Mark uncertain country-policy claims [VERIFY].
+- Recommend primary sources by their real institution or document type.
+- Make every proposal practical: identify who acts, what they do,
+  how it could be implemented, and what obstacles might arise.
+- Avoid generic diplomatic filler, repetitive points, and empty slogans.
+- Explain why each strategy is useful and what its trade-offs are.
+- Use clear Markdown, informative headings and concise language.
 - Do not write an entire speech for the student to memorise.
-  Give a strong outline and a short example of how to express an argument.
-- Recommendations must be practical enough to negotiate and draft into clauses.
-- Do not force a predetermined number of arguments if fewer are genuinely strong.
-- Write in precise, professional, accessible English.
-
-Return valid JSON only, with exactly these keys:
-"title" (string), "content" (Markdown string).
+- Return valid JSON only, with exactly these keys:
+  {"title":"...","content":"Markdown text"}
 `;
 
-    prompt = `
-Build a competition-ready MUN strategy briefing.
+      prompt = `
+Prepare a strategic briefing using these details:
 
 COUNTRY: ${country}
 COMMITTEE: ${committee}
 AGENDA: ${agenda}
 OTHER DELEGATIONS: ${delegations || "Not specified"}
 
-First, reason carefully about the exact problem, the committee's authority,
-the country's interests and the likely disagreements. Do not expose private
-chain-of-thought. Present conclusions, concise reasoning and useful analysis.
+Use this structure:
 
-Use these sections:
+## 1. The issue
+Explain the problem in plain English, its causes, who is affected,
+and what this committee can realistically address.
 
-## 1. The actual problem
-Explain the problem in plain English. Identify its causes, affected groups,
-why previous approaches may fail and the central policy conflict.
+## 2. Country strategy
+Explain the country's relevant interests and likely priorities.
+Clearly mark uncertain or unverified positions [VERIFY].
+Identify the main policy objective the delegate should pursue.
 
-## 2. The country's position
-Separate reasonably established policy from points requiring verification.
-Explain the country's interests, responsibilities, constraints and likely
-concerns. Do not assume the country supports a proposal without justification.
+## 3. Three policy arguments
+For each argument provide:
+- Claim: the precise position to defend.
+- Reasoning: why the policy makes sense.
+- Mechanism: how the proposed approach would work.
+- Impact: who benefits and how.
+- Vulnerability: the strongest objection or trade-off.
+- Response: a credible answer to that objection.
+- Evidence needed: the exact fact or document worth researching.
 
-## 3. The central strategic argument
-State the most defensible position this delegation can take.
-Explain what it should prioritise, what it can concede and what it should resist.
+Make these three arguments meaningfully different.
 
-## 4. Strong policy arguments
-Develop up to three arguments specific to this agenda.
-For each provide:
-- Claim
-- Reasoning: how the proposal produces the intended result
-- Practical impact
-- Evidence needed and credible places to find it
-- Strongest counterargument
-- A response that addresses that counterargument honestly
+## 4. Draftable solutions
+Give three realistic policy proposals that could inform operative
+clauses. For each, identify the action, responsible actor, implementation
+approach, and likely obstacle. Do not invent legal authority.
 
-## 5. Proposals that could work
-Give three concrete, distinct policy proposals where appropriate.
-For each explain who implements it, how it is funded, how compliance or
-progress is assessed, and one limitation. Do not propose unrealistic solutions.
+## 5. Negotiation plan
+Suggest possible negotiating partners based on policy interests,
+not stereotypes. Identify a reasonable compromise, a priority to protect,
+and a question to ask before committing to an alliance.
+Mark assumptions about other countries [VERIFY].
 
-## 6. Negotiation strategy
-Identify potential areas of shared interest without inventing confirmed allies.
-Explain useful compromises, red lines and a realistic path to agreement.
-Label uncertain assumptions [VERIFY].
+## 6. Questions and responses
+Give five purposeful POIs. For each, explain what information or
+commitment the question is designed to reveal.
+Then give three likely challenges to this country's position and
+strong, diplomatic response strategies.
 
-## 7. Pressure-testing questions
-Give five sharp, diplomatic POIs. For each explain what weakness or trade-off
-the question tests. Avoid questions that can be answered with a simple yes/no
-unless that answer exposes a useful contradiction.
+## 7. Opening speech plan
+Provide a concise opening structure: hook, diagnosis, national position,
+two concrete policy asks, and closing. Use prompts and key points
+rather than a memorised speech.
 
-## 8. Opening speech plan
-Give a compelling opening idea, the delegation's position, two policy priorities
-and a clear call for cooperation. Explain what each part must accomplish.
-Provide a short sample passage, not a complete memorisation script.
+## 8. Research plan
+List the most useful official institutions, treaty texts, UN documents,
+government publications or datasets to consult for this exact agenda.
+Explain what each could verify. Do not invent document titles, URLs,
+statistics or citations.
 
-## 9. Likely challenges
-Give three serious challenges other delegates could raise and defensible,
-specific responses. Do not invent evidence to win an argument.
-
-## 10. Research priorities
-List the five most useful facts to verify before the conference.
-Name appropriate official sources, such as relevant UN agencies, UN documents,
-national government statements, treaties or official statistical agencies.
-Explain what to search for. Do not fabricate links or document titles.
-
-Finish with:
-### Your next 20 minutes
-Give a realistic, timed plan for turning this briefing into the delegate's
-own arguments and checking its weakest factual claims.
-
-Avoid repeating the same idea in multiple sections. Make every section useful.
+Prioritise strategic depth over length. Avoid repeating the same
+argument in several sections. If a country position cannot be
+established confidently, say so and show the student how to verify it.
 `;
 
-  } else {
-    system = `
-You are DEBATRIX, a rigorous competitive debate coach.
+    } else {
+      if (!motion) {
+        return res.status(400).json({
+          error: "Enter a debate motion first."
+        });
+      }
 
-You help students construct arguments, understand mechanisms, anticipate
-opposition and improve their independent reasoning. You are not an essay
-generator and must not fill space to appear comprehensive.
+      system = `
+You are DEBATRIX, a high-standard competitive debate coach.
+
+Produce a case that could only have been written for this specific motion.
+Teach the student to reason, not merely to memorise polished paragraphs.
 
 QUALITY RULES:
-- Analyse the exact motion before developing arguments.
-- Respect the assigned side and debate format.
-- Identify the real point of disagreement, burdens of proof and what decides
-  the debate. Do not just list generic pros and cons.
-- Build arguments as logical chains: claim, mechanism, impact and comparison.
-- Explain WHY each link follows. Identify assumptions and possible failure points.
-- Steelman the strongest opposition instead of presenting a weak opponent.
-- A rebuttal must engage with the opponent's actual reasoning, not just disagree.
-- Compare impacts using probability, scale, timeframe, reversibility and who
-  is affected where those comparisons are relevant.
-- Never invent statistics, research, quotations, cases or URLs.
-- Label illustrative hypotheticals as examples, not real-world evidence.
-- Mark claims needing verification [VERIFY] and identify credible evidence sources.
-- Do not force an argument to fit the motion if it does not logically support it.
-- If the assigned side is Neutral, compare both sides fairly and identify
-  the conditions under which each is stronger.
-- Avoid repetitive points, vague advice, fake certainty and filler.
-- Teach the student how to think and adapt the case in their own words.
-- Use the selected debate format when its rules are known. If format details
-  are unclear, state the assumption rather than inventing rules.
-
-Return valid JSON only, with exactly these keys:
-"title" (string), "content" (Markdown string).
+- Analyse the actual wording and implications of the motion.
+- Respect the selected side and debate format.
+- Do not invent research, statistics, quotations, studies or citations.
+- Label claims requiring verification [VERIFY].
+- If evidence is unavailable, explain what evidence would test the claim.
+- Distinguish a logical argument from an empirical claim.
+- Consider implementation, incentives, affected groups and trade-offs.
+- Give the opposition its strongest plausible case, not a weak straw man.
+- Explain why arguments succeed or fail.
+- Avoid generic introductions, repeated claims and empty rhetoric.
+- Use specific examples only when you can explain the mechanism.
+- Adapt language and depth to the requested level.
+- Return valid JSON only, with exactly these keys:
+  {"title":"...","content":"Markdown text"}
 `;
 
-    prompt = `
-Create a high-quality, motion-specific debate coaching brief.
+      const levelInstructions = {
+        beginner: `
+Use accessible language. Explain unfamiliar terms.
+Make the causal reasoning especially clear.
+Keep the case manageable for someone learning debate.`,
+        balanced: `
+Be clear, strategic and competition-ready.
+Explain the most important reasoning without unnecessary jargon.`,
+        advanced: `
+Use deeper comparative analysis, burdens of proof, incentives,
+second-order effects, stakeholder trade-offs and strategic weighing.
+Identify sophisticated vulnerabilities in the case.`
+      };
+
+      prompt = `
+Build a motion-specific debate coaching brief.
 
 MOTION: ${motion}
-ASSIGNED SIDE: ${side}
+SIDE: ${side}
 FORMAT: ${format}
-DETAIL LEVEL: ${level}
+LEVEL: ${levelInstructions[level] || levelInstructions.balanced}
 
-Do not begin with a long generic introduction. Identify the central clash:
-what the two sides fundamentally disagree about, what each side must prove,
-and which questions are most likely to decide the debate.
+Use this structure:
 
-Use these sections:
+## 1. What the motion really means
+Explain the wording, reasonable definitions, the central disagreement,
+and any assumptions that need to be made explicit.
+Do not redefine the motion merely to make the chosen side easier to win.
 
-## 1. What this motion really means
-Explain it in plain English. Clarify ambiguous terms and reasonable definitions.
-Identify the key stakeholders, the proposed change or principle, and the
-most important question the judge must resolve.
+## 2. What wins the debate
+Explain what this side must prove, the most important questions for the
+judge, and which impacts should be compared first.
+Adapt the advice to the selected debate format.
 
-## 2. The strategic burden
-Explain what our side must prove, what it does not need to prove, the
-opposition's strongest burden and the most important weighing mechanism.
-Tailor this to the actual motion.
+## 3. The strongest arguments
+Develop three distinct arguments tailored to this motion.
 
-## 3. The strongest case for our side
-Develop up to three genuinely distinct arguments. Do not repeat the same
-benefit using different wording.
+For each, include:
+- Claim: one precise, contestable point.
+- Mechanism: step by step, how the claimed effect occurs.
+- Stakeholders: who is affected and why.
+- Impact: why the outcome matters compared with the alternative.
+- Example: a relevant illustration or clearly labelled hypothetical.
+- Evidence needed: what fact would support or weaken the claim.
+- Weakness: the strongest reasonable objection.
+- Defence: how to answer without ignoring the weakness.
 
-For each argument include:
-**Claim:** One precise sentence.
-**Mechanism:** The step-by-step causal logic explaining why the claim holds.
-**Impact:** Who is affected, how and why it matters.
-**Illustration:** A clearly labelled hypothetical or a real example only when
-you are confident it is genuine.
-**Evidence to verify:** The particular claim that needs evidence and the
-most relevant credible source type.
-**Weak link:** The assumption the opponent should attack.
-**Defence:** The best honest response to that weakness.
+Do not create fake statistics or treat plausible assumptions as facts.
 
 ## 4. The strongest opposing case
-Present the opposition's best two arguments fairly.
-Explain the reasoning that makes each persuasive and identify the assumption
-or trade-off on which it depends. Do not make the opposing side look foolish.
+Present three credible arguments for the other side.
+Explain the underlying logic and identify which challenge is hardest
+for the chosen side to answer.
+
+If the selected side is Neutral, compare both sides fairly and explain
+what additional information would help decide between them.
 
 ## 5. Rebuttal workshop
-For each major opposing argument, provide:
-- The exact claim being challenged
-- The best response
-- Why that response works logically
-- The opponent's likely reply
-- How our side should adapt if that reply succeeds
+Choose the two most important clashes in this debate.
+For each, show:
+- The opposing claim.
+- The underlying assumption.
+- A direct response.
+- The likely counter-response.
+- How to defend the response or concede a genuine weakness.
 
-Distinguish between disproving an argument, reducing its importance and
-showing that our side performs better comparatively.
+Avoid rebuttals that simply repeat the original argument.
 
-## 6. The decisive comparisons
-Identify the two or three comparisons most likely to determine the debate.
-Compare probability, scale, timeframe, distribution of benefits and harms,
-and reversibility where relevant. Explain which side has the advantage and why.
-Do not pretend uncertain outcomes are guaranteed.
+## 6. Cross-examination
+Give five short questions that expose assumptions, test feasibility,
+or clarify the opposition's priorities. Explain what each question tests.
 
-## 7. Questions that expose weaknesses
-Give five pointed cross-examination questions tailored to the motion.
-For each, explain the assumption it tests and what a useful answer would reveal.
-Avoid generic questions that could be used in any debate.
+## 7. Speech plan
+Give a clear opening, argument order, transitions, weighing and conclusion.
+Explain the purpose of each part rather than writing a speech to memorise.
 
-## 8. Speech architecture
-Give a format-aware structure for the speaker's role, with the purpose of
-each section and the reasoning that must be established. Do not invent
-format rules if they are unknown. Do not provide a full speech to memorise.
+## 8. Evidence and verification
+List the precise claims that need evidence and suggest credible sources
+or research methods appropriate to this motion.
+Do not invent sources or pretend evidence has already been checked.
 
-## 9. Evidence plan
-List five specific factual questions worth researching.
-For each, identify an appropriate source type, what finding would support
-our case, and what finding might weaken it. Never invent numbers or citations.
-Mark claims that require checking [VERIFY].
+## 9. Personal practice
+Give one difficult challenge question, a short exercise for improving
+the weakest argument, and a checklist for evaluating the case.
 
-## 10. Practice that improves the case
-Give one short drill in which the student must defend the weakest assumption,
-one drill for responding to an unexpected argument, and a 10-minute practice
-plan. Include a simple self-assessment checklist.
-
-Be selective. If a section does not add a useful new insight, keep it brief.
-The result must sound like a skilled coach analysed THIS motion, not a template
-filled with generic paragraphs.
+Keep the output useful rather than exhaustive. Every section must add
+new value. Prioritise the strongest reasoning over the number of words.
 `;
-  }
 
-  try {
+    }
+
     const response = await fetch(
       "https://api.groq.com/openai/v1/chat/completions",
       {
@@ -285,7 +260,7 @@ filled with generic paragraphs.
         },
         body: JSON.stringify({
           model: process.env.GROQ_MODEL || "openai/gpt-oss-20b",
-          temperature: 0.45,
+          temperature: 0.35,
           max_tokens: 5000,
           response_format: { type: "json_object" },
           messages: [
@@ -302,54 +277,42 @@ filled with generic paragraphs.
       console.error("Groq API error:", raw?.error?.message || response.status);
 
       return res.status(502).json({
-        error:
-          raw?.error?.message ||
-          "The AI provider returned an error. Check your Groq key, model setting and usage limits."
+        error: "The AI provider could not complete this preparation. Check your model and API settings, then try again."
       });
     }
 
-    const output = raw?.choices?.[0]?.message?.content;
-
-    if (!output) {
-      return res.status(502).json({
-        error: "The AI returned an empty response. Please try again."
-      });
-    }
-
+    const output = raw.choices?.[0]?.message?.content || "";
     let parsed;
 
     try {
       parsed = JSON.parse(output);
     } catch {
-      console.error("Groq returned invalid JSON.");
-
       return res.status(502).json({
-        error: "The AI response could not be processed. Please try again."
+        error: "The AI returned an unreadable response. Please try again."
       });
     }
 
     if (typeof parsed.content !== "string" || !parsed.content.trim()) {
       return res.status(502).json({
-        error: "The AI returned incomplete preparation. Please try again."
+        error: "The AI returned an empty preparation. Please try again."
       });
     }
 
-    const title =
-      typeof parsed.title === "string" && parsed.title.trim()
-        ? parsed.title.trim().slice(0, 200)
-        : kind === "mun"
-          ? `${country} — ${agenda}`
-          : motion;
+    const resultTitle =
+      clean(parsed.title, 300) ||
+      title ||
+      (kind === "mun" ? `${country} · ${agenda}` : motion);
 
     return res.status(200).json({
-      title,
+      title: resultTitle,
       content: parsed.content.trim()
     });
+
   } catch (error) {
-    console.error("DEBATRIX generation error:", error);
+    console.error("DEBATRIX preparation error:", error);
 
     return res.status(500).json({
-      error: "Could not connect to the AI service. Please try again."
+      error: "Something went wrong while generating your preparation. Please try again."
     });
   }
 }
