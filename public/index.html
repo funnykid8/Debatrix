@@ -1,401 +1,506 @@
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#17152b">
-<title>DEBATRIX — Make your point.</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10111b">
+  <meta name="description" content="DEBATRIX helps students develop stronger arguments, prepare for competitive debate, and build informed Model UN strategies.">
+  <meta property="og:title" content="DEBATRIX — Think clearly. Argue effectively.">
+  <meta property="og:description" content="Build your case, test your reasoning, and prepare for the questions that matter.">
+  <title>DEBATRIX — Think clearly. Argue effectively.</title>
 
-:root{
-  --bg:#f7f6f2;--ink:#19172c;--muted:#77758a;
-  --purple:#7660ee;--pink:#ff8eaa;--lime:#d9f477;
-  --line:#e9e7ef;--card:#fff;--navy:#19172c;
-}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans',sans-serif}
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #a99cff;outline-offset:2px}
-h1,h2,h3,p{margin-top:0}
-h1,h2,h3,.brand,.display{font-family:'Space Grotesk',sans-serif}
-.app{min-height:100vh}
-.topbar{height:76px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 5.5%;position:sticky;top:0;z-index:5}
-.brand{display:flex;align-items:center;gap:10px;font-size:23px;font-weight:700;letter-spacing:-1px}
-.brand-mark{width:35px;height:35px;border-radius:12px;background:var(--purple);color:white;display:grid;place-items:center;font-size:20px;transform:rotate(-5deg)}
-.brand em{font-style:normal;color:var(--purple)}
-.top-right{display:flex;align-items:center;gap:14px}
-.pill{border:1px solid var(--line);border-radius:30px;padding:9px 14px;font-size:12px;font-weight:700;background:white}
-.pill span{color:#31a875}
-main{max-width:1180px;margin:auto;padding:34px 25px 65px}
-.page{display:none}.page.active{display:block;animation:appear .3s ease}
-@keyframes appear{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.hero{background:var(--navy);color:white;border-radius:28px;padding:45px 44px;position:relative;overflow:hidden;display:grid;grid-template-columns:1.35fr .65fr;gap:25px;min-height:310px}
-.hero:after{content:"";position:absolute;width:310px;height:310px;border-radius:50%;background:#7660ee;right:-90px;top:-110px;opacity:.65}
-.hero:before{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:var(--pink);right:100px;bottom:-120px;opacity:.85}
-.hero-content,.hero-art{position:relative;z-index:1}
-.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.7px;text-transform:uppercase;color:var(--purple)}
-.hero .eyebrow{color:var(--lime)}
-.hero h1{font-size:clamp(40px,5vw,64px);letter-spacing:-3px;line-height:1.02;margin:17px 0}
-.hero h1 span{color:var(--lime)}
-.hero p{color:#d3d0e2;max-width:480px;line-height:1.7;font-size:15px}
-.hero-art{display:flex;align-items:center;justify-content:center}
-.bubble{background:var(--lime);color:var(--ink);padding:17px 19px;border-radius:18px 18px 18px 4px;font-weight:800;font-size:18px;transform:rotate(7deg);box-shadow:0 12px 0 #100f20}
-.bubble small{display:block;font-size:11px;font-weight:600;margin-top:7px}
-.spark{position:absolute;font-size:34px;color:var(--pink);right:15px;top:20px}
-.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:36px 0 18px}
-.section-head h2{font-size:25px;letter-spacing:-1px;margin:0}
-.section-head p{color:var(--muted);font-size:13px;margin:5px 0 0}
-.text-btn{border:0;background:none;color:var(--purple);font-weight:800;font-size:13px}
-.studio-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.studio-card{border:1px solid var(--line);border-radius:24px;padding:25px;background:white;transition:.2s;position:relative;overflow:hidden}
-.studio-card:hover{transform:translateY(-4px);box-shadow:0 15px 40px #2620440d}
-.studio-card.debate{background:#e9e5ff}
-.studio-card.mun{background:#ffe7ec}
-.studio-icon{width:52px;height:52px;display:grid;place-items:center;font-size:25px;background:white;border-radius:17px;margin-bottom:20px}
-.studio-card h3{font-size:25px;letter-spacing:-1px;margin-bottom:9px}
-.studio-card p{font-size:13px;line-height:1.7;color:#5d5a70;max-width:350px;min-height:44px}
-.tags{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0}
-.tag{background:#ffffffb5;border:1px solid #ffffffc7;border-radius:20px;padding:6px 10px;font-size:10px;font-weight:800}
-.primary{background:var(--purple);color:white;border:0;border-radius:12px;padding:13px 18px;font-size:13px;font-weight:800;transition:.2s}
-.primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.dark-btn{background:var(--navy);color:white;border:0;border-radius:12px;padding:13px 18px;font-size:13px;font-weight:800}
-.secondary{background:white;border:1px solid var(--line);border-radius:11px;padding:10px 13px;font-weight:700;font-size:12px;color:var(--ink)}
-.full{width:100%}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.step{background:white;border:1px solid var(--line);border-radius:18px;padding:19px}
-.step-num{font-size:12px;color:var(--purple);font-weight:800}
-.step h3{font-size:16px;margin:13px 0 7px}
-.step p{font-size:12px;line-height:1.6;color:var(--muted);margin:0}
-.bottom-note{margin-top:25px;background:var(--lime);border-radius:18px;padding:20px 23px;display:flex;justify-content:space-between;align-items:center;gap:20px}
-.bottom-note strong{font-family:'Space Grotesk';font-size:16px}
-.bottom-note p{font-size:12px;margin:5px 0 0}
-.bottom-note span{font-size:28px}
-.back{border:0;background:none;padding:0;color:var(--muted);font-size:13px;font-weight:700;margin-bottom:22px}
-.form-layout{display:grid;grid-template-columns: minmax(0,1fr) 280px;gap:22px;align-items:start}
-.form-card,.side-card,.result-card{background:white;border:1px solid var(--line);border-radius:22px;padding:27px}
-.form-card h1{font-size:34px;letter-spacing:-1.5px;margin:9px 0}
-.form-intro{color:var(--muted);font-size:13px;line-height:1.7;margin-bottom:26px}
-.field{margin-bottom:20px}
-.field label{display:block;font-size:12px;font-weight:800;margin-bottom:9px}
-.hint{font-weight:500;color:var(--muted)}
-input,select,textarea{width:100%;border:1px solid #e5e2ed;border-radius:12px;background:#fbfafc;color:var(--ink);padding:13px 14px;font-size:13px}
-textarea{resize:vertical;min-height:100px;line-height:1.6}
-input:focus,select:focus,textarea:focus{outline:2px solid #d8d1ff;border-color:var(--purple)}
-.side-card{background:var(--navy);color:white;position:sticky;top:95px}
-.side-card h3{font-size:19px;margin:12px 0}
-.side-card p{font-size:12px;line-height:1.8;color:#c6c2d8}
-.tip{border-top:1px solid #3b3851;padding-top:14px;margin-top:17px;font-size:12px;line-height:1.7;color:#ddd9ed}
-.tip b{color:var(--lime)}
-.form-actions{display:flex;gap:10px;align-items:center;margin-top:24px;flex-wrap:wrap}
-.form-actions .primary{flex:1}
-.result-top{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:20px}
-.result-top h1{font-size:30px;letter-spacing:-1px;margin:8px 0}
-.result-actions{display:flex;gap:8px;flex-wrap:wrap}
-.result-content{line-height:1.8;font-size:14px;overflow-wrap:anywhere}
-.result-content h2{font-size:22px;margin-top:30px;letter-spacing:-.6px}
-.result-content h3{font-size:17px;margin-top:22px}
-.result-content p{margin:0 0 13px}
-.result-content ul,.result-content ol{padding-left:23px}
-.result-content li{padding-left:4px;margin:6px 0}
-.result-content strong{color:#5140bf}
-.result-content blockquote{border-left:3px solid var(--pink);padding:8px 15px;margin:16px 0;background:#fff5f7;border-radius:0 10px 10px 0}
-.notice{padding:14px 16px;border-radius:12px;background:#f1eeff;color:#5140bf;font-size:12px;line-height:1.7;margin-bottom:20px}
-.loading{padding:30px;text-align:center;color:var(--muted)}
-.spinner{width:28px;height:28px;border:3px solid #e9e5ff;border-top-color:var(--purple);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 13px}
-@keyframes spin{to{transform:rotate(360deg)}}
-.history-list{display:grid;gap:12px}
-.history-item{background:white;border:1px solid var(--line);padding:17px;border-radius:16px;display:flex;justify-content:space-between;align-items:center;gap:14px}
-.history-item strong{font-size:14px;display:block;margin-bottom:5px}
-.history-item small{color:var(--muted)}
-.empty{background:white;border:1px dashed #d9d4e7;padding:35px;border-radius:18px;text-align:center;color:var(--muted);font-size:13px;line-height:1.7}
-footer{border-top:1px solid var(--line);padding:25px 5.5%;display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:11px}
-footer strong{color:var(--ink)}
-.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--navy);color:white;border-radius:12px;padding:13px 18px;font-size:13px;z-index:10;transition:.25s;max-width:90%;text-align:center}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:760px){
- .topbar{padding:0 18px;height:66px}.brand{font-size:20px}.top-right .pill{display:none}
- main{padding:22px 15px 45px}.hero{grid-template-columns:1fr;padding:30px 24px;min-height:0}.hero h1{font-size:47px}.hero-art{justify-content:flex-start;padding:10px 0 5px}.bubble{font-size:15px}
- .studio-grid,.form-layout{grid-template-columns:1fr}.studio-card p{min-height:0}.steps{grid-template-columns:1fr}.side-card{position:static;order:2}.form-card,.side-card,.result-card{padding:21px}.section-head{align-items:start}.section-head h2{font-size:22px}
- .bottom-note{align-items:flex-start}.result-top h1{font-size:26px}footer{padding:22px 17px;flex-direction:column}
-}
-</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
-<div class="app">
-<header class="topbar">
-  <button class="brand" onclick="go('home')" style="border:0;background:none;padding:0;color:inherit">
-    <span class="brand-mark">↗</span> DEBAT<em>RIX</em>
-  </button>
-  <div class="top-right">
-    <button class="text-btn" onclick="go('history')">My preparations</button>
-    <div class="pill"><span>●</span> Your thinking space</div>
-  </div>
-</header>
+  <a href="#home-view" class="skip-link">Skip to main content</a>
 
-<main>
-<section id="home" class="page active">
-  <div class="hero">
-    <div class="hero-content">
-      <div class="eyebrow">Your ideas deserve the spotlight ✳</div>
-      <h1>Big ideas.<br><span>Better arguments.</span></h1>
-      <p>Get ready to debate, challenge assumptions and walk into your next competition with a plan — not just a speech to memorise.</p>
-      <button class="primary" onclick="go('debate')" style="background:var(--lime);color:var(--ink)">Let's build your case ↗</button>
-    </div>
-    <div class="hero-art">
-      <div class="bubble">Wait, hear me out! 💭<small>Good arguments start with questions.</small></div>
-      <span class="spark">✳</span>
-    </div>
-  </div>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#home-view" aria-label="DEBATRIX home">
+        <span class="brand-mark">D<span>.</span></span>
+        <span>DEBATRIX</span>
+      </a>
 
-  <div class="section-head">
-    <div><h2>What are we preparing for?</h2><p>Choose your arena. We'll take it one step at a time.</p></div>
-  </div>
+      <nav class="top-actions" aria-label="Main navigation">
+        <button class="nav-link" data-view="debate">Debate Studio</button>
+        <button class="nav-link" data-view="mun">Diplomat Studio</button>
+        <button class="nav-link" data-view="history">My Library</button>
+        <button class="nav-link" data-view="groups">Teams</button>
+        <button class="button button-outline button-small" id="auth-nav">Log in / Sign up</button>
+        <button class="nav-link hidden" id="logout-btn">Log out</button>
+      </nav>
+    </header>
 
-  <div class="studio-grid">
-    <article class="studio-card debate">
-      <div class="studio-icon">🎤</div>
-      <div class="eyebrow">Make your case</div>
-      <h3>Debate Studio</h3>
-      <p>Build arguments that actually stand up to questions. Explore both sides, plan rebuttals and find out what evidence you need.</p>
-      <div class="tags"><span class="tag">Argument builder</span><span class="tag">Rebuttals</span><span class="tag">Speech planning</span></div>
-      <button class="primary full" onclick="go('debate')">Enter Debate Studio ↗</button>
-    </article>
-    <article class="studio-card mun">
-      <div class="studio-icon">🌍</div>
-      <div class="eyebrow">Think like a diplomat</div>
-      <h3>Diplomat Studio</h3>
-      <p>Understand your country's position, develop realistic policies, prepare questions and plan your next move in committee.</p>
-      <div class="tags"><span class="tag">Country strategy</span><span class="tag">Policy ideas</span><span class="tag">MUN prep</span></div>
-      <button class="dark-btn full" onclick="go('mun')">Enter Diplomat Studio ↗</button>
-    </article>
-  </div>
+    <!-- DASHBOARD -->
+    <main id="home-view" class="view active">
+      <section class="hero section-wrap">
+        <div class="hero-copy">
+          <div class="eyebrow">
+            <span class="status-dot"></span>
+            THINK CLEARLY. SPEAK WITH PURPOSE.
+          </div>
 
-  <div class="section-head">
-    <div><h2>How it works ✨</h2><p>You do the thinking. We'll help you sharpen it.</p></div>
-  </div>
-  <div class="steps">
-    <article class="step"><div class="step-num">01 / START</div><h3>Bring your topic</h3><p>Tell us your motion or MUN agenda. Add your side, country and format.</p></article>
-    <article class="step"><div class="step-num">02 / EXPLORE</div><h3>Challenge your thinking</h3><p>Examine reasoning, anticipate objections and identify evidence that needs checking.</p></article>
-    <article class="step"><div class="step-num">03 / OWN IT</div><h3>Make it yours</h3><p>Use your preparation to develop your own arguments. The goal is understanding, not memorising.</p></article>
-  </div>
-  <div class="bottom-note"><div><strong>Your goal isn't to sound clever. It's to think clearly.</strong><p>Every strong argument starts with curiosity. Go ask a better question.</p></div><span>💡</span></div>
-</section>
+          <h1>Make your<br><span>argument count.</span></h1>
 
-<section id="debate" class="page">
-  <button class="back" onclick="go('home')">← Back to dashboard</button>
-  <div class="form-layout">
-    <form id="debateForm" class="form-card">
-      <div class="eyebrow">🎤 Your arena</div>
-      <h1>Build your case.</h1>
-      <p class="form-intro">Let's get past the obvious points and find arguments worth defending. The more specific your topic, the more useful your preparation can be.</p>
-      <div class="field">
-        <label for="motion">What's the motion? <span class="hint">Be specific.</span></label>
-        <textarea id="motion" required placeholder="e.g. This house would ban smartphones in schools."></textarea>
+          <p class="hero-sub">
+            Prepare for debate and Model UN with a clearer strategy.
+            Build arguments, challenge assumptions, and learn to defend
+            your reasoning when the pressure is on.
+          </p>
+
+          <div class="hero-pills">
+            <span>Debate preparation</span>
+            <span>Model UN strategy</span>
+            <span>Team collaboration</span>
+          </div>
+
+          <div class="hero-cta">
+            <button class="button button-primary" data-view="debate">
+              Start preparing <span>↗</span>
+            </button>
+            <button class="button button-outline" data-view="mun">
+              Prepare for MUN
+            </button>
+          </div>
+
+          <p class="form-note">
+            Your preparation is a starting point. Verify evidence and make
+            the reasoning your own.
+          </p>
+        </div>
+
+        <div class="hero-art" aria-hidden="true">
+          <div class="art-orbit orbit-one"></div>
+          <div class="art-orbit orbit-two"></div>
+
+          <div class="art-card art-card-back">
+            <span class="art-label">COUNTERARGUMENT</span>
+            <div class="art-line w70"></div>
+            <div class="art-line w48"></div>
+            <div class="art-line w60"></div>
+          </div>
+
+          <div class="art-card art-card-front">
+            <div class="art-card-top">
+              <span class="art-label">YOUR CASE</span>
+              <span class="mini-badge">READY TO REFINE</span>
+            </div>
+            <div class="art-big">
+              Think deeper.<br>Argue better<span>.</span>
+            </div>
+            <div class="art-divider"></div>
+            <div class="art-foot">
+              <span>CLAIM</span>
+              <span>REASONING</span>
+              <span>EVIDENCE</span>
+            </div>
+          </div>
+
+          <div class="floating-chip chip-top">Clear reasoning</div>
+          <div class="floating-chip chip-bottom">Stronger rebuttals</div>
+        </div>
+      </section>
+
+      <section class="section-wrap workspace-section">
+        <div class="section-heading">
+          <div>
+            <div class="eyebrow">YOUR WORKSPACE</div>
+            <h2>What are you preparing for?</h2>
+          </div>
+          <p>Choose a workspace and start with your actual topic.</p>
+        </div>
+
+        <div class="mode-grid">
+          <article class="mode-card selected" id="debate-card">
+            <div class="mode-icon purple-icon">01</div>
+            <div class="mode-kicker">ARGUMENTATION</div>
+            <h3>Debate Studio</h3>
+            <p>
+              Develop a defensible case, examine the strongest opposition,
+              practise rebuttals, and identify the comparisons that matter.
+            </p>
+            <button class="text-button" data-view="debate">
+              Open Debate Studio <span>↗</span>
+            </button>
+          </article>
+
+          <article class="mode-card" id="mun-card">
+            <div class="mode-icon blue-icon">02</div>
+            <div class="mode-kicker">DIPLOMACY</div>
+            <h3>Diplomat Studio</h3>
+            <p>
+              Analyse your agenda, develop your country's position, prepare
+              points of information, and explore workable policy proposals.
+            </p>
+            <button class="text-button" data-view="mun">
+              Open Diplomat Studio <span>↗</span>
+            </button>
+          </article>
+
+          <article class="mode-card" id="group-card">
+            <div class="mode-icon green-icon">03</div>
+            <div class="mode-kicker">COLLABORATION</div>
+            <h3>Team Workspace</h3>
+            <p>
+              Organise research, assign tasks, collect arguments, and keep
+              your team's preparation structured in one place.
+            </p>
+            <button class="text-button" data-view="groups">
+              Open team workspace <span>↗</span>
+            </button>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- DEBATE STUDIO -->
+    <main id="debate-view" class="view">
+      <section class="section-wrap studio-page">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">DEBATE STUDIO / 01</div>
+            <h1>Build your case.</h1>
+            <p class="muted">
+              Start with the motion. Work through the reasoning.
+              Prepare for the strongest challenge to your position.
+            </p>
+          </div>
+          <button class="button button-outline" data-view="home">← Dashboard</button>
+        </div>
+
+        <div class="studio-layout">
+          <article class="panel prep-panel" id="debate-form">
+            <div class="panel-heading">
+              <div>
+                <div class="eyebrow">CASE BUILDER</div>
+                <h2>Define the debate</h2>
+                <p>Be precise. The quality of the analysis depends on the motion.</p>
+              </div>
+              <span class="panel-index">01</span>
+            </div>
+
+            <form id="debate-form-el" class="form-stack">
+              <label for="motion">Debate motion</label>
+              <textarea id="motion" required rows="3"
+                placeholder="Enter the exact motion. Example: This house would ban targeted advertising to children."></textarea>
+
+              <div class="field-label-row">
+                <label>Assigned side</label>
+                <span class="field-hint">Choose Neutral to examine both sides</span>
+              </div>
+
+              <div class="choice-row" role="group" aria-label="Debate side">
+                <label class="choice">
+                  <input type="radio" name="side" value="For">
+                  <span>For</span>
+                </label>
+                <label class="choice">
+                  <input type="radio" name="side" value="Against">
+                  <span>Against</span>
+                </label>
+                <label class="choice">
+                  <input type="radio" name="side" value="Neutral" checked>
+                  <span>Neutral</span>
+                </label>
+              </div>
+
+              <label for="format">Debate format</label>
+              <select id="format">
+                <option>General school debate</option>
+                <option>World Schools Debate</option>
+                <option>British Parliamentary</option>
+                <option>Lincoln-Douglas</option>
+                <option>Public Forum</option>
+                <option>Oxford-style debate</option>
+              </select>
+
+              <label for="level">Preparation level</label>
+              <select id="level">
+                <option value="balanced">Balanced and practical</option>
+                <option value="beginner">Beginner-friendly</option>
+                <option value="advanced">Advanced / competition</option>
+              </select>
+
+              <button class="button button-primary button-wide" type="submit">
+                Analyse this motion <span>↗</span>
+              </button>
+
+              <p class="form-note">
+                Generated material is a draft, not verified research.
+                Check important claims before using them in competition.
+              </p>
+            </form>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- DIPLOMAT STUDIO -->
+    <main id="mun-view" class="view">
+      <section class="section-wrap studio-page">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">DIPLOMAT STUDIO / 02</div>
+            <h1>Prepare your delegation.</h1>
+            <p class="muted">
+              Develop a country-specific strategy, identify negotiation
+              priorities, and turn policy into practical proposals.
+            </p>
+          </div>
+          <button class="button button-outline" data-view="home">← Dashboard</button>
+        </div>
+
+        <div class="studio-layout">
+          <article class="panel prep-panel mun-panel" id="mun-form">
+            <div class="panel-heading">
+              <div>
+                <div class="eyebrow">DELEGATION BRIEF</div>
+                <h2>Set your position</h2>
+                <p>Enter the details of your actual committee and agenda.</p>
+              </div>
+              <span class="panel-index">02</span>
+            </div>
+
+            <form id="mun-form-el" class="form-stack">
+              <label for="country">Assigned country</label>
+              <input id="country" required placeholder="e.g. India">
+
+              <label for="committee">Committee</label>
+              <input id="committee" required placeholder="e.g. UNHRC">
+
+              <label for="agenda">Agenda / topic</label>
+              <textarea id="agenda" required rows="3"
+                placeholder="Enter the full agenda as written in your conference guide."></textarea>
+
+              <label for="delegations">
+                Other delegations <span class="optional">OPTIONAL</span>
+              </label>
+              <input id="delegations" placeholder="Separate country names with commas">
+
+              <button class="button button-secondary button-wide" type="submit">
+                Build delegation brief <span>↗</span>
+              </button>
+
+              <p class="form-note">
+                Verify national policy against official government statements
+                and relevant UN documents.
+              </p>
+            </form>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <!-- GENERATED PREPARATION -->
+    <main id="results-view" class="view">
+      <section class="section-wrap output-section" id="output-section">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">YOUR PREPARATION / WORKING DRAFT</div>
+            <h1 id="output-title">Your preparation</h1>
+            <p class="muted">
+              Review the logic, challenge assumptions, and verify the evidence
+              before relying on a claim.
+            </p>
+          </div>
+          <button class="button button-outline" data-view="home">← Dashboard</button>
+        </div>
+
+        <div class="output-actions">
+          <button class="button button-outline button-small" id="save-prep">
+            Save preparation
+          </button>
+          <button class="button button-outline button-small" id="print-prep">
+            Print
+          </button>
+          <button class="button button-primary button-small" id="download-prep">
+            Download notes ↓
+          </button>
+        </div>
+
+        <div class="result-meta" id="result-meta"></div>
+        <div class="result-content" id="result-content"></div>
+      </section>
+    </main>
+
+    <!-- LOGIN -->
+    <main id="auth-view" class="view">
+      <section class="section-wrap narrow-wrap">
+        <button class="back-button" data-view="home">← Back to Home</button>
+
+        <div class="panel auth-panel">
+          <div class="auth-logo">D<span>.</span></div>
+          <div class="eyebrow">YOUR WORK. YOUR ACCOUNT.</div>
+          <h1 id="auth-title">Welcome to DEBATRIX.</h1>
+          <p class="muted">
+            Sign in to access account features. Guest mode remains available.
+            Cloud synchronisation requires account and database configuration.
+          </p>
+
+          <form id="auth-form" class="form-stack">
+            <label for="auth-email">Email address</label>
+            <input id="auth-email" type="email" autocomplete="email" required
+              placeholder="you@example.com">
+
+            <label for="auth-password">Password</label>
+            <input id="auth-password" type="password"
+              autocomplete="current-password" minlength="8" required
+              placeholder="At least 8 characters">
+
+            <div class="auth-actions">
+              <button class="button button-primary" type="submit" id="login-btn">
+                Log in
+              </button>
+              <button class="button button-outline" type="button" id="signup-btn">
+                Sign up
+              </button>
+            </div>
+          </form>
+
+          <p class="form-note" id="auth-message">
+            Use an email address you can access for confirmation.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <!-- SAVED HISTORY -->
+    <main id="history-view" class="view">
+      <section class="section-wrap">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">YOUR LIBRARY</div>
+            <h1>Preparation history.</h1>
+            <p class="muted">
+              Revisit previous cases and notes saved from your preparation sessions.
+            </p>
+          </div>
+          <button class="button button-outline" data-view="home">← Dashboard</button>
+        </div>
+
+        <div class="history-toolbar">
+          <button class="button button-outline button-small" id="import-guest">
+            Import guest history to account
+          </button>
+          <span class="muted small-text" id="history-status">
+            Saved on this device in guest mode.
+          </span>
+        </div>
+
+        <div class="history-list" id="history-list"></div>
+      </section>
+    </main>
+
+    <!-- TEAM WORKSPACE -->
+    <main id="groups-view" class="view">
+      <section class="section-wrap">
+        <div class="page-heading">
+          <div>
+            <div class="eyebrow">COLLABORATION / 03</div>
+            <h1>Team workspace<span class="heading-period">.</span></h1>
+            <p class="muted">
+              Structure your preparation, assign research, and develop
+              arguments with your team.
+            </p>
+          </div>
+          <button class="button button-outline" data-view="home">← Dashboard</button>
+        </div>
+
+        <div class="group-layout">
+          <aside class="panel group-sidebar">
+            <div class="panel-heading">
+              <div>
+                <div class="eyebrow">YOUR TEAMS</div>
+                <h2>Workspaces</h2>
+              </div>
+              <span class="panel-index">03</span>
+            </div>
+
+            <button class="button button-primary button-wide" id="new-group">
+              + Create a group
+            </button>
+
+            <form id="join-group-form" class="join-form">
+              <label for="join-code">Join with invite code</label>
+              <div class="inline-field">
+                <input id="join-code" placeholder="e.g. ABC123" maxlength="8" required>
+                <button class="button button-outline button-small" type="submit">
+                  Join
+                </button>
+              </div>
+            </form>
+
+            <div id="group-list" class="group-list"></div>
+
+            <p class="form-note">
+              Guest workspaces are stored locally in this browser.
+              Cross-device collaboration requires backend configuration.
+            </p>
+          </aside>
+
+          <section class="panel group-main" id="group-main">
+            <div class="empty-state">
+              <div class="empty-icon">↗</div>
+              <h2>Build a stronger case together.</h2>
+              <p>
+                Create a workspace to organise the motion, divide research,
+                and develop your team's arguments.
+              </p>
+              <button class="button button-primary" id="empty-create">
+                Create your first group
+              </button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-brand">
+        <span class="brand-mark small-mark">D<span>.</span></span>
+        <span>DEBATRIX</span>
       </div>
-      <div class="field">
-        <label>Which side are you on?</label>
-        <select id="side"><option>For</option><option>Against</option><option selected>Neutral</option></select>
+      <span>Think clearly. Argue effectively.</span>
+      <span>Created by Siddharth.N</span>
+    </footer>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="group-dialog" class="dialog">
+    <form method="dialog" id="create-group-form" class="form-stack">
+      <div class="dialog-heading">
+        <div>
+          <div class="eyebrow">NEW TEAM SPACE</div>
+          <h2>Create a group</h2>
+        </div>
+        <button class="icon-button" value="cancel" aria-label="Close">×</button>
       </div>
-      <div class="field">
-        <label>Debate format</label>
-        <select id="format"><option>General school debate</option><option>British Parliamentary</option><option>World Schools Debate</option><option>Lincoln-Douglas</option><option>Public Forum</option><option>Parliamentary debate</option><option>Other</option></select>
-      </div>
-      <div class="field">
-        <label>How deep should we go?</label>
-        <select id="level"><option value="concise">Quick prep — the essentials</option><option value="balanced" selected>Competition prep — go deeper</option><option value="detailed">Deep dive — challenge everything</option></select>
-      </div>
-      <div class="form-actions"><button class="primary" type="submit">Build my preparation ↗</button><button class="secondary" type="reset">Clear</button></div>
+
+      <label for="group-name">Workspace name</label>
+      <input id="group-name" required maxlength="60"
+        placeholder="e.g. Debate Competition Team">
+
+      <label for="group-motion">Motion / project topic</label>
+      <textarea id="group-motion" rows="2"
+        placeholder="What is your team preparing for?"></textarea>
+
+      <label for="group-purpose">Session goal</label>
+      <input id="group-purpose" placeholder="e.g. Develop opening arguments">
+
+      <button class="button button-primary button-wide" type="submit">
+        Create workspace
+      </button>
     </form>
-    <aside class="side-card">
-      <div style="font-size:29px">🧠</div>
-      <h3>Think beyond your side.</h3>
-      <p>The best debaters understand the strongest argument against their own position, too.</p>
-      <div class="tip"><b>PRO TIP ✳</b><br>Don't just ask “What can I say?” Ask “What would change someone's mind?”</div>
-      <div class="tip"><b>WHAT YOU'LL GET</b><br>Argument breakdowns, counterarguments, rebuttal pathways, evidence to research and a practice checklist.</div>
-    </aside>
-  </div>
-</section>
+  </dialog>
 
-<section id="mun" class="page">
-  <button class="back" onclick="go('home')">← Back to dashboard</button>
-  <div class="form-layout">
-    <form id="munForm" class="form-card">
-      <div class="eyebrow">🌍 Your committee awaits</div>
-      <h1>Think like a diplomat.</h1>
-      <p class="form-intro">A strong delegate knows their country's interests, understands other positions and proposes solutions people might actually support.</p>
-      <div class="field"><label for="country">Your assigned country</label><input id="country" required placeholder="e.g. United Kingdom"></div>
-      <div class="field"><label for="committee">Committee</label><input id="committee" required placeholder="e.g. UNGA, UNSC, WHO"></div>
-      <div class="field"><label for="agenda">Agenda / topic</label><textarea id="agenda" required placeholder="What is the committee discussing?" style="min-height:90px"></textarea></div>
-      <div class="field"><label for="delegations">Other countries / delegations <span class="hint">Optional</span></label><textarea id="delegations" placeholder="Countries you expect to negotiate with..." style="min-height:75px"></textarea></div>
-      <div class="form-actions"><button class="primary" type="submit">Build my MUN strategy ↗</button><button class="secondary" type="reset">Clear</button></div>
-    </form>
-    <aside class="side-card">
-      <div style="font-size:29px">🕊️</div>
-      <h3>Diplomacy is strategy.</h3>
-      <p>Your job isn't just to give a speech. It's to defend a position, build alliances and negotiate something achievable.</p>
-      <div class="tip"><b>PRO TIP ✳</b><br>Know what your country wants, what it can compromise on and what it cannot accept.</div>
-      <div class="tip"><b>WHAT YOU'LL GET</b><br>Policy analysis, argument strategies, solution ideas, questions, speech outline and claims to verify.</div>
-    </aside>
-  </div>
-</section>
-
-<section id="results" class="page">
-  <button class="back" onclick="go(lastStudio)">← Back to studio</button>
-  <div class="result-card">
-    <div class="result-top">
-      <div><div class="eyebrow">Your thinking workspace ✳</div><h1 id="resultTitle">Your preparation</h1></div>
-      <div class="result-actions">
-        <button class="secondary" onclick="saveCurrent()">♡ Save</button>
-        <button class="secondary" onclick="downloadCurrent()">↓ Download</button>
-        <button class="secondary" onclick="window.print()">Print</button>
-      </div>
-    </div>
-    <div class="notice">Use this as a starting point, not a script to memorise. Check factual claims and develop the arguments in your own words.</div>
-    <div id="resultBody" class="result-content"></div>
-    <div style="border-top:1px solid var(--line);margin-top:30px;padding-top:20px;display:flex;gap:10px;flex-wrap:wrap">
-      <button class="primary" onclick="go(lastStudio)">Keep working ↗</button>
-      <button class="secondary" onclick="go('home')">Dashboard</button>
-    </div>
-  </div>
-</section>
-
-<section id="history" class="page">
-  <button class="back" onclick="go('home')">← Back to dashboard</button>
-  <div class="section-head" style="margin-top:0"><div><div class="eyebrow">Your work, all in one place</div><h2 style="margin-top:8px">My preparations 📚</h2><p>Pick up where you left off.</p></div><button class="secondary" onclick="clearHistory()">Clear history</button></div>
-  <div id="historyList" class="history-list"></div>
-</section>
-</main>
-
-<footer><div><strong>DEBATRIX</strong> · Think clearly. Speak boldly.</div><div>Created by Siddharth.N</div></footer>
-<div id="toast" class="toast"></div>
-</div>
-
-<script>
-const $ = id => document.getElementById(id);
-let lastStudio = 'debate';
-let currentPreparation = null;
-let toastTimer;
-
-function go(page){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  const target = $(page);
-  if(target) target.classList.add('active');
-  if(page==='history') renderHistory();
-  window.scrollTo({top:0,behavior:'smooth'});
-}
-function toast(message){
-  const el=$('toast');el.textContent=message;el.classList.add('show');
-  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
-}
-function escapeHTML(s){
-  return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function renderMarkdown(text){
-  // Escape HTML before applying a small safe Markdown subset.
-  let s=escapeHTML(text||'').replace(/\r\n/g,'\n');
-  s=s.replace(/^### (.*)$/gm,'<h3>$1</h3>')
-     .replace(/^## (.*)$/gm,'<h2>$1</h2>')
-     .replace(/^# (.*)$/gm,'<h2>$1</h2>')
-     .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-     .replace(/\*(.*?)\*/g,'<em>$1</em>');
-  const lines=s.split('\n');let html='',inList=false;
-  for(const line of lines){
-    if(/^<h[23]>/.test(line)){if(inList){html+='</ul>';inList=false;}html+=line;continue;}
-    if(/^\s*[-*]\s+/.test(line)){
-      if(!inList){html+='<ul>';inList=true;}
-      html+='<li>'+line.replace(/^\s*[-*]\s+/,'')+'</li>';continue;
-    }
-    if(/^\s*\d+[.)]\s+/.test(line)){
-      if(!inList){html+='<ol>';inList=true;}
-      html+='<li>'+line.replace(/^\s*\d+[.)]\s+/,'')+'</li>';continue;
-    }
-    if(inList){html+='</ul>';inList=false;}
-    if(line.trim()) html+='<p>'+line+'</p>';
-  }
-  if(inList)html+='</ul>';
-  return html;
-}
-async function generate(form,kind){
-  const button=form.querySelector('button[type="submit"]');
-  const original=button.textContent;
-  button.disabled=true;button.textContent='Building your prep…';
-  lastStudio=kind==='mun'?'mun':'debate';
-  go('results');
-  $('resultTitle').textContent='Putting your ideas together…';
-  $('resultBody').innerHTML='<div class="loading"><div class="spinner"></div><strong>Thinking it through ✳</strong><p>Building a structured preparation for your topic.</p></div>';
-  const data=kind==='mun'?{
-    kind:'mun',country:$('country').value.trim(),committee:$('committee').value.trim(),
-    agenda:$('agenda').value.trim(),delegations:$('delegations').value.trim()
-  }:{
-    kind:'debate',motion:$('motion').value.trim(),side:$('side').value,
-    format:$('format').value,level:$('level').value
-  };
-  try{
-    const response=await fetch('/api/groq',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(data)
-    });
-    let result;
-    try{result=await response.json()}catch{throw new Error('The server returned an unreadable response. Please try again.')}
-    if(!response.ok)throw new Error(result.error||'Preparation failed. Please try again.');
-    if(!result.content)throw new Error('The AI returned an empty preparation. Please try again.');
-    currentPreparation={id:Date.now(),kind,title:result.title||(kind==='mun'?data.agenda:data.motion),content:result.content,created:new Date().toISOString(),details:data};
-    $('resultTitle').textContent=currentPreparation.title;
-    $('resultBody').innerHTML=renderMarkdown(currentPreparation.content);
-  }catch(error){
-    $('resultTitle').textContent='We hit a snag.';
-    $('resultBody').innerHTML='<div class="notice">'+escapeHTML(error.message)+'</div><p>Check your connection and Vercel deployment, then try again.</p><button class="primary" onclick="go(lastStudio)">Back and try again</button>';
-  }finally{
-    button.disabled=false;button.textContent=original;
-  }
-}
-$('debateForm').addEventListener('submit',e=>{e.preventDefault();generate(e.currentTarget,'debate')});
-$('munForm').addEventListener('submit',e=>{e.preventDefault();generate(e.currentTarget,'mun')});
-
-function getHistory(){
-  try{return JSON.parse(localStorage.getItem('debatrix_preparations')||'[]')}catch{return []}
-}
-function saveCurrent(){
-  if(!currentPreparation){toast('Generate a preparation first.');return}
-  const items=getHistory();
-  if(!items.some(x=>x.id===currentPreparation.id))items.unshift(currentPreparation);
-  try{
-    localStorage.setItem('debatrix_preparations',JSON.stringify(items.slice(0,50)));
-    toast('Saved to this browser ✓');
-  }catch{toast('Could not save. Your browser storage may be full.')}
-}
-function renderHistory(){
-  const items=getHistory(),container=$('historyList');
-  if(!items.length){
-    container.innerHTML='<div class="empty"><div style="font-size:32px;margin-bottom:10px">🗂️</div><strong>No preparations saved yet.</strong><br>Build a case or MUN strategy, then hit Save to keep it here.</div>';
-    return;
-  }
-  container.innerHTML=items.map((item,index)=>`<article class="history-item">
-    <div><strong>${escapeHTML(item.title||'Untitled preparation')}</strong><small>${item.kind==='mun'?'🌍 Diplomat Studio':'🎤 Debate Studio'} · ${escapeHTML(new Date(item.created).toLocaleDateString())}</small></div>
-    <button class="secondary" onclick="openSaved(${index})">Open ↗</button>
-  </article>`).join('');
-}
-function openSaved(index){
-  const item=getHistory()[index];if(!item)return;
-  currentPreparation=item;lastStudio=item.kind==='mun'?'mun':'debate';
-  $('resultTitle').textContent=item.title||'Your preparation';
-  $('resultBody').innerHTML=renderMarkdown(item.content);
-  go('results');
-}
-function clearHistory(){
-  if(!confirm('Delete all preparations saved in this browser?'))return;
-  localStorage.removeItem('debatrix_preparations');renderHistory();toast('Local history cleared.');
-}
-function downloadCurrent(){
-  if(!currentPreparation){toast('Generate a preparation first.');return}
-  const text=currentPreparation.title+'\n\n'+currentPreparation.content;
-  const blob=new Blob([text],{type:'text/markdown;charset=utf-8'});
-  const url=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=url;a.download='debatrix-preparation.md';a.click();URL.revokeObjectURL(url);
-}
-</script>
+  <script src="/app.js"></script>
 </body>
 </html>
+
